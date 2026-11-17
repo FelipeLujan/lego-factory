@@ -552,6 +552,113 @@ async def guarded(slug):
         return r
 
 
-results = await parallel(VIDEOS, guarded)
-summary = [{k: v for k, v in r.items() if k in ("slug", "rounds", "passed", "overall", "mp4", "dur", "error")} for r in results]
-print(json.dumps(summary, indent=1, ensure_ascii=False))
+# ------------------------------------------------------------------ DAEMON MODE: work a queue file forever
+# Args: {"queue_file": "<abs>/queue.json", "concurrency": 3, ...}. queue.json = {"items": [{"slug", "status": "pending",
+#   "brief_file"?: abs path, "topic"?: "text (category)", "tofu"?: true, "resume"?: {...}}]}. Edit the file at any time to add or
+#   reorder pending items. When nothing is pending, a researcher agent finds new engaging topics and appends them. Runs until stopped.
+QUEUE_FILE = A.get("queue_file")
+MIN_FREE_GB = float(A.get("min_free_gb", 5))
+
+
+def free_gb():
+    return shutil.disk_usage(os.path.expanduser("~")).free / 1e9
+
+
+if QUEUE_FILE:
+    qlock, refill_lock = asyncio.Lock(), asyncio.Lock()
+
+    def qload():
+        return json.load(open(QUEUE_FILE, encoding="utf-8"))
+
+    def qsave(q):
+        tmp = QUEUE_FILE + ".tmp"
+        json.dump(q, open(tmp, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
+        os.replace(tmp, QUEUE_FILE)
+
+    async def next_item():
+        async with qlock:
+            q = qload()
+            for it in q["items"]:
+                if it.get("status", "pending") == "pending":
+                    it["status"], it["started"] = "running", time.strftime("%Y-%m-%d %H:%M")
+                    qsave(q)
+                    return it
+        return None
+
+    async def mark(slug, **kw):
+        async with qlock:
+            q = qload()
+            for it in q["items"]:
+                if it["slug"] == slug and it.get("status") == "running":
+                    it.update(kw)
+            qsave(q)
+
+    def register(it):
+        slug = it["slug"]
+        if it.get("brief_file"):
+            BRIEFS[slug] = it["brief_file"]
+        if it.get("topic"):
+            TOPICS[slug] = it["topic"]
+            BRIEFS.setdefault(slug, os.path.join(WS, "docs", "facts", f"{slug}.md"))
+        if it.get("tofu", True):
+            TOFU.add(slug)
+        if it.get("resume"):
+            RESUME[slug] = it["resume"]
+
+    TOPIC_SCHEMA = {"type": "object", "properties": {"topics": {"type": "array", "items": {"type": "object", "properties": {
+        "slug": {"type": "string"}, "topic": {"type": "string"}, "why": {"type": "string"}}, "required": ["slug", "topic", "why"]}}},
+        "required": ["topics"]}
+
+    async def refill():
+        async with refill_lock:
+            q = qload()
+            if any(it.get("status", "pending") == "pending" for it in q["items"]):
+                return 0
+            taken = sorted({it["slug"] for it in q["items"]} | {d for d in os.listdir(WS) if os.path.isdir(os.path.join(WS, d))})
+            phase("queue refill · topic research")
+            r = await agent(f"""The DealCalm LEGO video queue is empty. Find 6 NEW, highly engaging topics for DealCalm top-of-funnel
+Reels/Shorts (read {WS}/docs/DEALCALM-TOFU.md). Priority order: (1) real negotiation / power / manipulation STORIES with a
+scroll-stopping twist (corporate coups, hostage standoffs, famous deals, diplomatic showdowns, heists, sports contracts);
+(2) negotiation TECHNIQUES from well-known sources (Chris Voss "Never Split the Difference", "Getting to Yes", Cialdini
+"Influence", Kahneman/Tversky), each explained through a dramatized or real example; (3) everyday negotiation scenarios.
+Use web search to confirm each story is well documented. Avoid these slugs/topics already done or queued: {', '.join(taken)}.
+Return topics: slug (short kebab-case, unique), topic (one line: what it is + category + the hook angle), why (why it will
+engage strangers). Never play audio/video.""", schema=TOPIC_SCHEMA, role="Topic scout", type_name="self", model="inherit")
+            added = 0
+            async with qlock:
+                q = qload()
+                have = {it["slug"] for it in q["items"]} | set(taken)
+                for t in r["topics"]:
+                    slug = re.sub(r"[^a-z0-9-]", "", t["slug"].lower().replace(" ", "-"))[:40]
+                    if slug and slug not in have:
+                        q["items"].append({"slug": slug, "topic": t["topic"], "status": "pending", "added_by": "topic scout", "why": t["why"]})
+                        have.add(slug); added += 1
+                qsave(q)
+            report(f"### Queue refill: {added} new topics\n\n" + "\n".join(f"- `{t['slug']}`: {t['topic']}" for t in r["topics"]))
+            return added
+
+    async def worker(i):
+        while True:
+            while free_gb() < MIN_FREE_GB:
+                log(f"[worker {i}] internal disk {free_gb():.1f} GB free < {MIN_FREE_GB} GB: pausing 10 min")
+                await asyncio.sleep(600)
+            it = await next_item()
+            if not it:
+                try:
+                    n = await refill()
+                except Exception as e:
+                    log(f"[worker {i}] refill failed: {e}"); n = 0
+                if not n:
+                    await asyncio.sleep(120)
+                continue
+            register(it)
+            log(f"[worker {i}] picked {it['slug']}")
+            r = await guarded(it["slug"])
+            await mark(it["slug"], status="error" if r.get("error") else "done", finished=time.strftime("%Y-%m-%d %H:%M"),
+                       overall=round(r.get("overall", 0) or 0, 2), mp4=r.get("mp4"), error=r.get("error"))
+
+    await parallel(list(range(CONC)), worker)
+else:
+    results = await parallel(VIDEOS, guarded)
+    summary = [{k: v for k, v in r.items() if k in ("slug", "rounds", "passed", "overall", "mp4", "dur", "error")} for r in results]
+    print(json.dumps(summary, indent=1, ensure_ascii=False))
