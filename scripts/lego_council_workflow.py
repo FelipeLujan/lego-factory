@@ -563,6 +563,7 @@ async def guarded(slug):
 #   reorder pending items. When nothing is pending, a researcher agent finds new engaging topics and appends them. Runs until stopped.
 QUEUE_FILE = A.get("queue_file")
 MIN_FREE_GB = float(A.get("min_free_gb", 5))
+DEFAULT_ITEM_ROUNDS = int(A.get("item_rounds", 3))
 
 
 def free_gb():
@@ -607,8 +608,7 @@ if QUEUE_FILE:
             BRIEFS.setdefault(slug, os.path.join(WS, "docs", "facts", f"{slug}.md"))
         if it.get("tofu", True):
             TOFU.add(slug)
-        if it.get("resume"):
-            RESUME[slug] = it["resume"]
+        RESUME[slug] = it.get("resume") or {"round": 1, "max_round": DEFAULT_ITEM_ROUNDS}   # scout topics: 3 rounds, not max_rounds
 
     TOPIC_SCHEMA = {"type": "object", "properties": {"topics": {"type": "array", "items": {"type": "object", "properties": {
         "slug": {"type": "string"}, "topic": {"type": "string"}, "why": {"type": "string"}}, "required": ["slug", "topic", "why"]}}},
@@ -636,7 +636,8 @@ engage strangers). Never play audio/video.""", schema=TOPIC_SCHEMA, role="Topic 
                 for t in r["topics"]:
                     slug = re.sub(r"[^a-z0-9-]", "", t["slug"].lower().replace(" ", "-"))[:40]
                     if slug and slug not in have:
-                        q["items"].append({"slug": slug, "topic": t["topic"], "status": "pending", "added_by": "topic scout", "why": t["why"]})
+                        q["items"].append({"slug": slug, "topic": t["topic"], "status": "pending", "added_by": "topic scout", "why": t["why"],
+                                           "resume": {"round": 1, "max_round": DEFAULT_ITEM_ROUNDS}})
                         have.add(slug); added += 1
                 qsave(q)
             report(f"### Queue refill: {added} new topics\n\n" + "\n".join(f"- `{t['slug']}`: {t['topic']}" for t in r["topics"]))
