@@ -359,7 +359,12 @@ async def make_builder(slug):
     return agent(builder_brief(slug), role=f"Builder · {slug}", type_name="builder-legoCouncil", model="inherit")
 
 
+PRIORITY = A.get("priority_note", "")
+
+
 async def builder_turn(state, slug, prompt):
+    if PRIORITY:
+        prompt = prompt + "\n\nPRIORITY FROM THE PERSON: " + PRIORITY
     try:
         return await state["b"](prompt, BSCHEMA)
     except Exception as e:
