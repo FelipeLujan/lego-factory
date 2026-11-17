@@ -10,7 +10,7 @@ screenshots only). This is **not** a DealCalm video: there is no DealCalm CTA.
 - **Story arc:** the mania (1998–99) → Pets.com as the poster child → the peak (March 10, 2000) → the Fed and the turn → the crash (2000–2002) → the survivors and the long climb back → the lesson.
 - **Hook idea** (≤ 14 words; rewrite freely): "In 1999, adding dot com to your name could make your stock jump."
 - **Ending:** the line "So when everyone says this time is different, remember the sock puppet." (or a tighter version), then a subtle follow pull. No sales pitch.
-- **Props quality bar:** `disney-iger` r7 (use `assets/props-kit.js`: ≥ 6 asset types per set, ≥ 3 unique to that set, extras holding props, live props).
+- **Props quality bar:** `examples/disney-iger-r7/` (use `assets/props-kit.js`: ≥ 6 asset types per set, ≥ 3 unique to that set, extras holding props, live props).
 - **Sets (8+, fully dressed, brick-built, late-90s flavour):**
   - a 1999 office with beige CRT monitors and a "BOB'S SHOES → BOB'S SHOES.COM" sign change;
   - a trading floor with ticker boards (brick tiles), phones and traders;

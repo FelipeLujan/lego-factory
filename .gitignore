@@ -9,6 +9,7 @@
 !/requirements.txt
 !/skills-lock.json
 !/docs/
+!/examples/
 !/scripts/
 !/templates/
 !/.agents/

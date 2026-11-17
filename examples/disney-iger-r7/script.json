@@ -1,0 +1,146 @@
+{
+  "voice": "en-US-Chirp3-HD-Zubenelgenubi",
+  "rate": 1.32,
+  "lines": [
+    {
+      "id": "hook",
+      "gap": 0.1,
+      "text": "He picked his successor. Under three years later, he was back in the chair."
+    },
+    {
+      "id": "stakes",
+      "gap": 0.12,
+      "text": "Then an activist came for a seat on the board. Three moves kept the board in control."
+    },
+    {
+      "id": "feb20",
+      "gap": 0.05,
+      "text": "February 2020. Bob Iger hands Disney's CEO job to Bob Chapek."
+    },
+    {
+      "id": "chair21",
+      "gap": 0.08,
+      "text": "Iger stays on as executive chairman until the end of 2021."
+    },
+    {
+      "id": "nov22",
+      "gap": 0.05,
+      "text": "Less than a year after that, on Sunday, November 20, 2022, the board makes its move."
+    },
+    {
+      "id": "board_ann",
+      "gap": 0.1,
+      "text": "It announces that Chapek is out, and Iger is returning as CEO."
+    },
+    {
+      "id": "how",
+      "gap": 0.08,
+      "text": "So how does a board pull off a switch like that?"
+    },
+    {
+      "id": "one",
+      "gap": 0.05,
+      "text": "Move number one: keep a proven replacement waiting in the wings."
+    },
+    {
+      "id": "one_exp",
+      "gap": 0.05,
+      "text": "Pushing out a CEO is a gamble, unless the replacement has done the job before."
+    },
+    {
+      "id": "one_iger",
+      "gap": 0.1,
+      "text": "Iger had."
+    },
+    {
+      "id": "jan23",
+      "gap": 0.05,
+      "text": "Then, in January 2023, a new threat arrives: activist investor Nelson Peltz of Trian."
+    },
+    {
+      "id": "seat",
+      "gap": 0.1,
+      "text": "He launches a proxy fight for a seat on Disney's board."
+    },
+    {
+      "id": "two",
+      "gap": 0.05,
+      "text": "Move number two: take away the other side's argument."
+    },
+    {
+      "id": "two_exp",
+      "gap": 0.1,
+      "text": "An activist needs a demand the company refuses. No refusal, no rally."
+    },
+    {
+      "id": "feb23",
+      "gap": 0.05,
+      "text": "February 2023. Disney doesn't fight the demand. It does something stranger: it delivers it."
+    },
+    {
+      "id": "cuts",
+      "gap": 0.05,
+      "text": "A restructuring, with about seven thousand job cuts and 5.5 billion dollars in cost savings."
+    },
+    {
+      "id": "deliver",
+      "gap": 0.08,
+      "text": "Peltz demanded cuts. Disney made them. His argument is gone."
+    },
+    {
+      "id": "drops",
+      "gap": 0.05,
+      "text": "And Peltz drops the fight. Case closed? Not quite."
+    },
+    {
+      "id": "y2024",
+      "gap": 0.05,
+      "text": "In 2024, Peltz comes back for another round."
+    },
+    {
+      "id": "vote",
+      "gap": 0.1,
+      "text": "This time, it goes all the way to a shareholder vote."
+    },
+    {
+      "id": "three",
+      "gap": 0.05,
+      "text": "Move number three: win the vote by winning the big shareholders."
+    },
+    {
+      "id": "three_exp",
+      "gap": 0.05,
+      "text": "In a proxy fight, headlines make noise. Share counts decide."
+    },
+    {
+      "id": "three_big",
+      "gap": 0.1,
+      "text": "Win the biggest holders, and the challenger has nowhere to go. So it all comes down to one count."
+    },
+    {
+      "id": "apr24",
+      "gap": 0.05,
+      "text": "April 3, 2024. Disney shareholders cast their votes."
+    },
+    {
+      "id": "reject",
+      "gap": 0.12,
+      "text": "They vote Disney's whole board back in, and reject Peltz. He never gets his seat."
+    },
+    {
+      "id": "m1",
+      "gap": 0.05,
+      "text": "Three moves: a replacement waiting, an argument removed, the big holders won over."
+    },
+    {
+      "id": "take",
+      "gap": 0.12,
+      "text": "Remove their reason to fight, and the fight ends."
+    },
+    {
+      "id": "cta",
+      "gap": 0.1,
+      "text": "Someone coming for your seat? Pull an Iger: leave them nothing to fight about. Practice that move with Deal Calm, on the App Store and at deal calm dot com."
+    }
+  ]
+}

@@ -28,7 +28,7 @@ inheritMcp: false
 You are the **LEGO Explainer Producer & 3D Scene Author** in `<workspace>` (macOS `zsh`, Apple Silicon hardware WebGL, Python `.venv/bin/python`).
 
 ## Mandatory Reading Before Building
-0. **`<workspace>/.agents/skills/lego-explainer/SKILL.md`**: the lessons from every council so far (Starship plus the 15-video DealCalm revamp). Fix its section-4 list (the most-flagged defects) BEFORE round 1.
+0. **`<workspace>/.agents/skills/lego-explainer/SKILL.md`** (§3c lists what made the approved dot-com r6 video work) and **`<workspace>/examples/README.md`** (the approved reference videos): the lessons from every council so far (Starship plus the 15-video DealCalm revamp). Fix its section-4 list (the most-flagged defects) BEFORE round 1.
 1. `<workspace>/AGENTS.md` (house rules)
 2. `<workspace>/PLAYBOOK.md` (step-by-step video build workflow)
 3. `<workspace>/templates/brick-cinematic/README.md` (for full-environment LEGO video-game look) or `templates/brick-story` (for brick-story look)
@@ -69,8 +69,8 @@ You are the **LEGO Explainer Producer & 3D Scene Author** in `<workspace>` (macO
    - sprite snow, steam or ribbons instead of LEGO elements (6141 plates, `X.puffs`, real debris);
    - sounds with no visible event;
    - real people in invented scenes.
-8. **Props & set dressing:** **Props & set-dressing quality bar = `disney-iger` r7 (`renders/disney-iger-r7-props.mp4`): the person approved it, so every new or revamped LEGO video must match it or beat it.**
-   - Use the shared prop library `assets/props-kit.js` (`const PK = PROPS.setup(ctx, K, X)`; template copy in `templates/brick-cinematic/assets/props-kit.js`; usage example: `dressSets()` in `disney-iger/assets/scene.js`). It has 40+ brick-built assets (office, stage/studio, outdoor/street, hall), `PK.extra` minifig extras with hand props, `PK.bake(set)` to merge static props into InstancedMeshes, and `PK.tick(t)` for live props.
+8. **Props & set dressing:** **Quality bar (approved by the person): `examples/dotcom-crash-lego-r6/` overall ("I loved it": a visual brick metaphor for every beat, cause → effect shots, a callback loop) and `examples/disney-iger-r7/` for props.** Read `examples/README.md` and look at both `stills/` folders before building. For props specifically, every new or revamped LEGO video must match or beat `disney-iger` r7:
+   - Use the shared prop library `assets/props-kit.js` (`const PK = PROPS.setup(ctx, K, X)`; template copy in `templates/brick-cinematic/assets/props-kit.js`; usage example: `dressSets()` in `examples/disney-iger-r7/assets/scene.js`; story-prop examples: `examples/dotcom-crash-lego-r6/assets/dc-kit*.js`). It has 40+ brick-built assets (office, stage/studio, outdoor/street, hall), `PK.extra` minifig extras with hand props, `PK.bake(set)` to merge static props into InstancedMeshes, and `PK.tick(t)` for live props.
    - Every set: at least 6 asset types, at least 3 that appear in no other set, foreground + midground + background interest, extras holding props, and 1–2 live props (fan, steam, fountain, pigeons, balloons, screens).
    - Add story-specific assets the library lacks (GPUs, server racks, race cars…). Put new GENERIC ones back into the template's props-kit.js so the library keeps growing.
    - Dressing never covers faces, the subtitle band, slams, HUD tags or CTA text. Check that props are actually visible in the tight framings (props outside the frame don't count).

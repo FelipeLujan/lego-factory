@@ -47,11 +47,25 @@ Run them with `scripts/lego_council_workflow.py` + `topics` (it researches the f
   - 1.4 s of digital silence under the end card.
 
 ## 3b. Props & set dressing (the quality bar)
-**Props & set-dressing quality bar = `disney-iger` r7 (`renders/disney-iger-r7-props.mp4`): the person approved it, so every new or revamped LEGO video must match it or beat it.**
-- Use the shared prop library `assets/props-kit.js` (`const PK = PROPS.setup(ctx, K, X)`; template copy in `templates/brick-cinematic/assets/props-kit.js`; usage example: `dressSets()` in `disney-iger/assets/scene.js`). It has 40+ brick-built assets (office, stage/studio, outdoor/street, hall), `PK.extra` minifig extras with hand props, `PK.bake(set)` to merge static props into InstancedMeshes, and `PK.tick(t)` for live props.
+**Quality bar (approved by the person): `examples/dotcom-crash-lego-r6/` overall ("I loved it": a visual brick metaphor for every beat, cause → effect shots, a callback loop) and `examples/disney-iger-r7/` for props.** Read `examples/README.md` and look at both `stills/` folders before building. For props specifically, every new or revamped LEGO video must match or beat `disney-iger` r7:
+- Use the shared prop library `assets/props-kit.js` (`const PK = PROPS.setup(ctx, K, X)`; template copy in `templates/brick-cinematic/assets/props-kit.js`; usage example: `dressSets()` in `examples/disney-iger-r7/assets/scene.js`; story-prop examples: `examples/dotcom-crash-lego-r6/assets/dc-kit*.js`). It has 40+ brick-built assets (office, stage/studio, outdoor/street, hall), `PK.extra` minifig extras with hand props, `PK.bake(set)` to merge static props into InstancedMeshes, and `PK.tick(t)` for live props.
 - Every set: at least 6 asset types, at least 3 that appear in no other set, foreground + midground + background interest, extras holding props, and 1–2 live props (fan, steam, fountain, pigeons, balloons, screens).
 - Add story-specific assets the library lacks (GPUs, server racks, race cars…). Put new GENERIC ones back into the template's props-kit.js so the library keeps growing.
 - Dressing never covers faces, the subtitle band, slams, HUD tags or CTA text. Check that props are actually visible in the tight framings (props outside the frame don't count).
+
+## 3c. What made dotcom-crash-lego r6 the approved video (copy these habits)
+- **One brick metaphor per idea, built physically:**
+  - a "mountain" of brick bars for an index's rise, peak and collapse, which stays on screen as a recurring set;
+  - a balance scale tipping to PAID over SOLD FOR for selling at a loss;
+  - a coin fountain draining its round-plate pool for "cheap money dried up";
+  - a survivor tower dropping from 16 floors to 2, then regrowing past the skyline.
+- **Cause → effect in every shot:** a brick drops onto the sign, then the stock jumps; the CRT line crashes red, then the box stack topples into bricks; a roller door rises, then the van sags under free-shipping bags.
+- **A callback object that loops:** the sock puppet is set up in the hook ("The warning sign? A sock puppet."), shown at its peak (stadium ad), at its fall (slumped on a bean bag) and in the ending ("remember the sock puppet").
+- **11 sets, each revisited from a new angle, never the same framing twice.** Story props live in project kits (`dc-kit*.js`, `dc-sets.js`), built on PK primitives so they can be baked.
+- **Short, punchy script lines (≤ 12 words)** with rhetorical questions ("Profits? Not the question. Yet." … "And then came the yet.") and numbers written the way the transcript prints them, so there are no word-count warnings.
+- **Chips and callouts carry the exact figures** (5,048.62 · March 10, 2000) while the voice says "above five thousand". Subtitles are 3 words / 20 chars, and the end title is set by an injected style so it never wraps.
+- **A sound per idea**, with low fillers under every pause; the voice-mix.wav chain lands about −15.7 LUFS.
+Sources: `examples/dotcom-crash-lego-r6/REVAMP_NOTES.md` (set-by-set table with timings) and `stills/`.
 
 ## 4. What the council marks down most (fix these BEFORE round 1)
 Ranked by how often seats flagged them:

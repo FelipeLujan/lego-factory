@@ -22,7 +22,7 @@ These are short story videos for **DealCalm** (`dealcalm.com` & Apple App Store)
 
 ## Visual rules (cinematic LEGO video-game upgrade)
 
-> **Props quality bar:** `disney-iger` r7 (`renders/disney-iger-r7-props.mp4`), approved by the person. Every video uses `assets/props-kit.js` with ≥ 6 asset types per set (≥ 3 unique to that set), extras with hand props and live props. See `.agents/skills/lego-explainer/SKILL.md` §3b.
+> **Quality bar:** `examples/dotcom-crash-lego-r6/` (overall) + `examples/disney-iger-r7/` (props), approved by the person. Every video uses `assets/props-kit.js` with ≥ 6 asset types per set (≥ 3 unique to that set), extras with hand props and live props. See `.agents/skills/lego-explainer/SKILL.md` §3b.
 
 1. **Use `templates/brick-cinematic` (`K.mfig` + `FXKIT` + cinematic `stage.html`):**
    - Load `assets/ldraw-parts.js`, `assets/brick-kit.js`, `assets/fx-kit.js`, `assets/ldraw-kit.js`, and `compositions/stage.html`.

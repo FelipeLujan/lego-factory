@@ -112,8 +112,9 @@ It will be judged by a blind 6-seat LEGO council from screenshots, for up to {MA
 
 READ FIRST: `{WS}/.agents/skills/lego-explainer/SKILL.md` (lessons from every earlier council: fix its section-4 list BEFORE round 1),
 `{WS}/AGENTS.md`, `{WS}/PLAYBOOK.md`, `{WS}/templates/brick-cinematic/README.md`, `compositions/stage.html` (header documents the
-per-shot `look`), and two council-tested scenes as code examples: `{WS}/starship-f15-p1/assets/scene.js` and
-`{WS}/disney-iger/assets/scene.js` (+ `assets/props-kit.js` if present). Style targets (TT-Games LEGO cutscenes): {', '.join(REFS)}.
+per-shot `look`), and the APPROVED reference videos (the quality bar: match or beat them): `{WS}/examples/README.md`, then
+`{WS}/examples/dotcom-crash-lego-r6/` (overall: stills/, REVAMP_NOTES.md, assets/dc-sets.js, dc-kit*.js, scene.js) and
+`{WS}/examples/disney-iger-r7/` (props: assets/props-kit.js, dressSets() in scene.js). Style targets (TT-Games LEGO cutscenes): {', '.join(REFS)}.
 Do NOT edit the engine files (stage.html, build.py, brick-kit.js, fx-kit.js, ldraw-kit.js, ldraw-parts.js, film.js). You may add
 project-local helper files under assets/ (e.g. props-kit.js) loaded in index.html before scene.js.
 
@@ -137,8 +138,8 @@ REQUIREMENTS
      empty bottom 40% of the frame, no black voids). Give each set its own prop palette; build a project props kit with many varied
      brick assets. Explain ideas with tactile brick metaphors (glowing GPU bricks, a parameter-brick tower, word bricks linked by
      light beams, data flowing as studs).
-   - PROPS QUALITY BAR = disney-iger r7 (the person approved it; match or beat it): use assets/props-kit.js
-     (`PK = PROPS.setup(ctx, K, X)`, see dressSets() in {WS}/disney-iger/assets/scene.js): every set gets >= 6 asset types,
+   - PROPS QUALITY BAR = examples/disney-iger-r7 (approved; match or beat it; overall bar: examples/dotcom-crash-lego-r6): use assets/props-kit.js
+     (`PK = PROPS.setup(ctx, K, X)`, see dressSets() in {WS}/examples/disney-iger-r7/assets/scene.js): every set gets >= 6 asset types,
      >= 3 unique to that set, extras holding props (PK.extra), 1-2 live props (PK.tick), PK.bake(set) for performance; add
      story-specific assets the library lacks; props must be visible in the actual framings but never cover faces or text.
    - Per-shot `look`: warm practical key + cool rim, bloom 0.45-0.65 without blowouts, tilt-shift DOF 0.35-0.65 on close/medium shots.
@@ -165,8 +166,8 @@ It will be judged by a blind 6-seat LEGO council from screenshots, for up to {MA
 
 READ FIRST: `{WS}/.agents/skills/lego-explainer/SKILL.md` (the lessons from every earlier council: fix its section-4 list before round 1), `{WS}/AGENTS.md`, `{WS}/PLAYBOOK.md`, `{WS}/templates/brick-cinematic/README.md`, the top sections of `{DOC}`
 ("Format" and "Visual rules"), the project's current `script.json`, `cues.json`, and `assets/scene.brickstory.js` (the old
-brick-story scene, for story beats and props). Code example of a council-approved brick-cinematic scene:
-`{WS}/starship-f15-p1/assets/scene.js` (per-shot `look`, X.sky/X.skyEnv, X.ground, brick clouds, puffs, DOF). Style targets
+brick-story scene, for story beats and props). Approved reference videos (match or beat them): `{WS}/examples/README.md`, `{WS}/examples/dotcom-crash-lego-r6/`
+(overall) and `{WS}/examples/disney-iger-r7/` (props). Style targets
 (TT-Games LEGO cutscenes): {', '.join(REFS)}.
 
 THE PROJECT IS ALREADY ON THE CINEMATIC ENGINE (scripts/upgrade_to_cinematic.py ran): index.html loads ldraw-parts.js,
@@ -200,8 +201,8 @@ REQUIREMENTS
    - 8+ distinct, fully dressed brick environments, zero black voids: interiors enclosed (back + side walls, windows onto brick
      skylines or X.sky, practical lamps with bloom, studded/tiled floors); exteriors with X.sky + X.skyEnv (align sky sunDir with
      look.sun.dir), X.ground, brick trees/cars/street furniture, X.brickClouds; layered foreground/background depth.
-   - PROPS QUALITY BAR = disney-iger r7 (the person approved it; match or beat it): use assets/props-kit.js
-     (`PK = PROPS.setup(ctx, K, X)`, see dressSets() in {WS}/disney-iger/assets/scene.js): every set gets >= 6 asset types,
+   - PROPS QUALITY BAR = examples/disney-iger-r7 (approved; match or beat it; overall bar: examples/dotcom-crash-lego-r6): use assets/props-kit.js
+     (`PK = PROPS.setup(ctx, K, X)`, see dressSets() in {WS}/examples/disney-iger-r7/assets/scene.js): every set gets >= 6 asset types,
      >= 3 unique to that set, extras holding props (PK.extra), 1-2 live props (PK.tick), PK.bake(set) for performance; add
      story-specific assets the library lacks; props must be visible in the actual framings but never cover faces or text.
    - A per-shot `look` from update(): warm key + cool rim, bloom 0.45-0.65, tilt-shift DOF 0.35-0.65 on close/medium shots, grade.

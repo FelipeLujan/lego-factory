@@ -28,7 +28,7 @@ black-mesh stage with full environments. (For simple brick story videos on the b
 | `assets/ldraw-parts.js` | Generated LDraw geometry (see `tools-ldraw/README.md` to add parts). |
 | `assets/tex/earth_*` | Earth textures (from the three.js repo, MIT; NASA-derived). |
 | `assets/brick-kit.js` | Sets, props, procedural figures (`K.fig`), materials. |
-| `assets/props-kit.js` | **Shared prop library** (40+ brick-built assets, minifig extras, `PK.bake`, `PK.tick`). `PK = PROPS.setup(ctx, K, X)`. The quality bar is disney-iger r7: ≥ 6 asset types per set, ≥ 3 unique to each set. Extend per project; add generic assets back here. |
+| `assets/props-kit.js` | **Shared prop library** (40+ brick-built assets, minifig extras, `PK.bake`, `PK.tick`). `PK = PROPS.setup(ctx, K, X)`. The quality bar is `examples/disney-iger-r7/` (props) + `examples/dotcom-crash-lego-r6/` (overall): ≥ 6 asset types per set, ≥ 3 unique to each set. Extend per project; add generic assets back here. |
 
 ## Lessons (2026-11-15, Starship videos)
 - Align the sky dome's `sunDir` with `look.sun.dir`, or shadows and the sun disc disagree.

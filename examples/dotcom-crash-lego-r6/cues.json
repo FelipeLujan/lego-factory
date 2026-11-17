@@ -1,0 +1,528 @@
+{
+  "_readme": "Every 'at' is SPOKEN WORDS from script.json (case and punctuation ignored). See PLAYBOOK.md section 4.",
+  "captions": {
+    "style": "subtitle",
+    "max_words": 3,
+    "max_chars": 20
+  },
+  "hook": {
+    "line1": "Get rich fast?",
+    "line2": "Then lose 78%."
+  },
+  "end": {
+    "line1": "Remember: sock puppet",
+    "line2": "Follow → next bubble"
+  },
+  "accent": [
+    "1999",
+    "letters",
+    "jump",
+    "floor",
+    "warning",
+    "puppet",
+    "investors",
+    "profit",
+    "profits",
+    "606",
+    "1998",
+    "nasdaq",
+    "pets",
+    "less",
+    "free",
+    "repeat",
+    "bowl",
+    "public",
+    "11",
+    "peaked",
+    "thousand",
+    "stopped",
+    "reserve",
+    "six",
+    "cheap",
+    "question",
+    "november",
+    "webvan",
+    "bankrupt",
+    "amazon's",
+    "90",
+    "bottom",
+    "78",
+    "climb",
+    "2015",
+    "fifteen",
+    "internet",
+    "hype",
+    "giants",
+    "different",
+    "sock",
+    "bubble",
+    "proof",
+    "giant",
+    "why",
+    "spot",
+    "threw",
+    "yet",
+    "thought",
+    "follow",
+    "606",
+    "dotcom"
+  ],
+  "chapters": [
+    "then the floor",
+    "the warning sign",
+    "investors threw",
+    "profits not the",
+    "proof november 1998",
+    "and in 1999 alone",
+    "now about that",
+    "it sold pet",
+    "then shipped",
+    "but it had",
+    "february 2000 it",
+    "weeks later",
+    "then the music",
+    "in under a",
+    "cheap money",
+    "and then came",
+    "pets dot-com shut",
+    "webvan the grocery",
+    "even amazon's",
+    "in october 2002",
+    "how long to",
+    "fifteen years",
+    "but the internet",
+    "and amazon the one",
+    "so when everyone",
+    "remember the sock"
+  ],
+  "big_moves": [
+    "february 2000 it",
+    "weeks later",
+    "and then came",
+    "pets dot-com shut",
+    "how long to",
+    "and amazon the one",
+    "so when everyone",
+    "remember the sock"
+  ],
+  "slams": [
+    {
+      "at": "five thousand",
+      "letter": "5K",
+      "word": "THE PEAK"
+    },
+    {
+      "at": "six times",
+      "letter": "6",
+      "word": "RATE HIKES"
+    },
+    {
+      "at": "down about 78",
+      "letter": "78",
+      "word": "PERCENT DOWN"
+    }
+  ],
+  "tags": [
+    {
+      "at": "the globe dot-com rose",
+      "text": "THEGLOBE.COM",
+      "hold": 3.6
+    },
+    {
+      "at": "meet pets",
+      "text": "PETS.COM",
+      "hold": 3.3
+    },
+    {
+      "at": "webvan the grocery",
+      "text": "WEBVAN · 2001",
+      "hold": 3.3
+    },
+    {
+      "at": "even amazon's",
+      "text": "AMAZON",
+      "hold": 3.4
+    }
+  ],
+  "payoff": "hit bottom",
+  "sfx": [
+    {
+      "at": "in 1999",
+      "sound": "computer",
+      "gain": 0.22,
+      "max_len": 2.4,
+      "offset": -0.05
+    },
+    {
+      "at": "three letters",
+      "sound": "woodblock",
+      "gain": 0.26,
+      "run": [
+        0,
+        4,
+        7
+      ],
+      "step": 0.2
+    },
+    {
+      "at": "stock jump",
+      "sound": "slide-whistle",
+      "gain": 0.18
+    },
+    {
+      "at": "dot-com",
+      "sound": "boing",
+      "gain": 0.3,
+      "offset": -0.2
+    },
+    {
+      "at": "fell out",
+      "sound": "bricks",
+      "gain": 0.34,
+      "offset": 0.1
+    },
+    {
+      "at": "fell out",
+      "sound": "thud",
+      "gain": 0.3,
+      "offset": 0.35
+    },
+    {
+      "at": "fell out",
+      "sound": "sonicboom",
+      "gain": 0.3,
+      "offset": 0.55
+    },
+    {
+      "at": "the warning sign",
+      "sound": "buzzer",
+      "gain": 0.12,
+      "max_len": 0.6,
+      "offset": 0.72
+    },
+    {
+      "at": "a sock puppet",
+      "sound": "squeak",
+      "gain": 0.24
+    },
+    {
+      "at": "internet companies",
+      "sound": "computer",
+      "gain": 0.12,
+      "max_len": 1.4
+    },
+    {
+      "at": "profits not the",
+      "sound": "thud",
+      "gain": 0.22,
+      "offset": 0.05
+    },
+    {
+      "at": "yet",
+      "sound": "boing",
+      "gain": 0.24,
+      "semis": -3,
+      "offset": 0.05
+    },
+    {
+      "at": "606 percent",
+      "sound": "clang",
+      "gain": 0.2,
+      "offset": 0.05
+    },
+    {
+      "at": "on day one",
+      "sound": "chime",
+      "gain": 0.26,
+      "semis": -7
+    },
+    {
+      "at": "on day one",
+      "sound": "pop",
+      "gain": 0.22,
+      "offset": 0.25,
+      "semis": -6
+    },
+    {
+      "at": "and in 1999 alone",
+      "sound": "woodblock",
+      "gain": 0.22,
+      "run": [
+        0,
+        2,
+        4,
+        5,
+        7,
+        9
+      ],
+      "step": 0.32,
+      "offset": 0.25
+    },
+    {
+      "at": "now about that",
+      "sound": "servo",
+      "gain": 0.16,
+      "max_len": 2.0,
+      "offset": 0.6
+    },
+    {
+      "at": "meet pets",
+      "sound": "servo",
+      "gain": 0.12,
+      "max_len": 1.0,
+      "offset": -0.5,
+      "semis": -3
+    },
+    {
+      "at": "meet pets",
+      "sound": "clunk",
+      "gain": 0.26,
+      "offset": -0.1
+    },
+    {
+      "at": "it sold pet",
+      "sound": "thud",
+      "gain": 0.26,
+      "offset": -0.5
+    },
+    {
+      "at": "less than it paid",
+      "sound": "clunk",
+      "gain": 0.34
+    },
+    {
+      "at": "heavy bags",
+      "sound": "thud",
+      "gain": 0.28
+    },
+    {
+      "at": "lose money on",
+      "sound": "buzzer",
+      "gain": 0.12,
+      "max_len": 0.6
+    },
+    {
+      "at": "but it had",
+      "sound": "cheer",
+      "gain": 0.17,
+      "max_len": 5.2,
+      "offset": -0.35
+    },
+    {
+      "at": "famous sock puppet",
+      "sound": "squeak",
+      "gain": 0.22,
+      "offset": 0.3
+    },
+    {
+      "at": "february 2000 it",
+      "sound": "computer",
+      "gain": 0.14,
+      "offset": 0.9,
+      "max_len": 1.6
+    },
+    {
+      "at": "went public at",
+      "sound": "clang",
+      "gain": 0.18,
+      "semis": -2
+    },
+    {
+      "at": "went public at",
+      "sound": "chime",
+      "gain": 0.22,
+      "semis": -5,
+      "offset": 0.15
+    },
+    {
+      "at": "a share",
+      "sound": "pop",
+      "gain": 0.22,
+      "offset": 0.6,
+      "semis": -3
+    },
+    {
+      "at": "weeks later",
+      "sound": "woodblock",
+      "gain": 0.16,
+      "run": [
+        0,
+        2,
+        4,
+        5,
+        7,
+        9,
+        11,
+        12,
+        14,
+        16
+      ],
+      "step": 0.2,
+      "offset": 0.9
+    },
+    {
+      "at": "music stopped",
+      "sound": "scratch",
+      "gain": 0.22,
+      "max_len": 1.0
+    },
+    {
+      "at": "music stopped",
+      "sound": "bricks",
+      "gain": 0.32,
+      "offset": 0.25
+    },
+    {
+      "at": "raised interest",
+      "sound": "woodblock",
+      "gain": 0.2,
+      "run": [
+        0,
+        2,
+        4,
+        5,
+        7,
+        9
+      ],
+      "step": 0.4
+    },
+    {
+      "at": "dried up",
+      "sound": "slide-whistle",
+      "gain": 0.08,
+      "semis": -5
+    },
+    {
+      "at": "and then came",
+      "sound": "beep",
+      "gain": 0.16,
+      "offset": 0.3
+    },
+    {
+      "at": "where are the",
+      "sound": "beep",
+      "gain": 0.2
+    },
+    {
+      "at": "where are the",
+      "sound": "pop",
+      "gain": 0.2,
+      "offset": 0.8,
+      "semis": -4
+    },
+    {
+      "at": "nine months",
+      "sound": "clunk",
+      "gain": 0.26
+    },
+    {
+      "at": "going public",
+      "sound": "creak",
+      "gain": 0.16,
+      "offset": 0.9
+    },
+    {
+      "at": "webvan the grocery",
+      "sound": "creak",
+      "gain": 0.18,
+      "offset": 2.1
+    },
+    {
+      "at": "bankrupt in july",
+      "sound": "clang",
+      "gain": 0.26
+    },
+    {
+      "at": "bankrupt in july",
+      "sound": "clunk",
+      "gain": 0.2,
+      "offset": 0.9,
+      "semis": -3
+    },
+    {
+      "at": "more than 90",
+      "sound": "rumble",
+      "gain": 0.24
+    },
+    {
+      "at": "in october 2002",
+      "sound": "creak",
+      "gain": 0.2,
+      "offset": 1.2
+    },
+    {
+      "at": "hit bottom",
+      "sound": "boom",
+      "gain": 0.95
+    },
+    {
+      "at": "hit bottom",
+      "sound": "rumble",
+      "gain": 0.55,
+      "max_len": 2.4,
+      "offset": 0.05
+    },
+    {
+      "at": "hit bottom",
+      "sound": "bricks",
+      "gain": 0.44,
+      "offset": 0.45
+    },
+    {
+      "at": "fifteen years",
+      "sound": "riser",
+      "gain": 0.13,
+      "offset": -0.05
+    },
+    {
+      "at": "fifteen years",
+      "sound": "chime",
+      "gain": 0.24
+    },
+    {
+      "at": "april 2015",
+      "sound": "slide-whistle",
+      "gain": 0.14,
+      "offset": 0.3
+    },
+    {
+      "at": "and amazon the one",
+      "sound": "servo",
+      "gain": 0.1,
+      "max_len": 2.4,
+      "offset": 2.3
+    },
+    {
+      "at": "so when everyone",
+      "sound": "computer",
+      "gain": 0.16,
+      "max_len": 2.0,
+      "offset": 0.3
+    },
+    {
+      "at": "remember the sock",
+      "sound": "squeak",
+      "gain": 0.2,
+      "semis": -3,
+      "offset": 0.55
+    },
+    {
+      "at": "and you'll spot",
+      "sound": "inflate",
+      "gain": 0.3,
+      "offset": 0.9
+    },
+    {
+      "at": "next bubble",
+      "sound": "pop",
+      "gain": 0.36,
+      "offset": 0.45
+    },
+    {
+      "at": "next bubble",
+      "sound": "creak",
+      "gain": 0.13,
+      "offset": 1.6
+    }
+  ]
+}

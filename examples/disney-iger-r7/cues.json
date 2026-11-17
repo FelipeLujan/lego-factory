@@ -1,0 +1,445 @@
+{
+  "_readme": "Every 'at' is SPOKEN WORDS from script.json (case and punctuation ignored); the build turns them into seconds.",
+  "captions": {
+    "style": "subtitle",
+    "max_words": 3,
+    "max_chars": 20
+  },
+  "hook": {
+    "line1": "Picked his heir.",
+    "line2": "CEO again."
+  },
+  "end": {
+    "line1": "DealCalm",
+    "line2": "App Store · dealcalm.com"
+  },
+  "accent": [
+    "successor",
+    "three",
+    "back",
+    "activist",
+    "seat",
+    "2020",
+    "iger",
+    "chapek",
+    "ceo",
+    "chairman",
+    "2021",
+    "sunday",
+    "2022",
+    "move",
+    "out",
+    "returning",
+    "switch",
+    "leverage",
+    "alternative",
+    "risky",
+    "proven",
+    "stranger",
+    "before",
+    "2023",
+    "threat",
+    "peltz",
+    "trian",
+    "proxy",
+    "argument",
+    "refuses",
+    "rally",
+    "beats",
+    "restructuring",
+    "seven",
+    "thousand",
+    "billion",
+    "savings",
+    "gone",
+    "drops",
+    "quite",
+    "2024",
+    "vote",
+    "big",
+    "biggest",
+    "noise",
+    "decide",
+    "can't",
+    "april",
+    "whole",
+    "reject",
+    "seat",
+    "fix",
+    "disappears",
+    "reason",
+    "ends",
+    "calm",
+    "chair",
+    "control",
+    "gamble",
+    "stranger"
+  ],
+  "chapters": [
+    "then an activist",
+    "february 2020",
+    "iger stays on",
+    "less than a year",
+    "it announces",
+    "so how does",
+    "move number one",
+    "pushing out a ceo",
+    "then in january 2023",
+    "nelson peltz",
+    "move number two",
+    "an activist needs",
+    "february 2023",
+    "about seven thousand",
+    "peltz demanded cuts",
+    "and peltz drops",
+    "in 2024 peltz comes",
+    "move number three",
+    "in a proxy fight",
+    "win the biggest",
+    "april 3 2024",
+    "they vote disney's",
+    "three moves a replacement",
+    "remove their reason",
+    "someone coming",
+    "practice that move"
+  ],
+  "big_moves": [
+    "it announces",
+    "april 3 2024"
+  ],
+  "slams": [
+    {
+      "at": "move number one",
+      "letter": "1",
+      "word": "REPLACEMENT"
+    },
+    {
+      "at": "move number two",
+      "letter": "2",
+      "word": "NO ARGUMENT"
+    },
+    {
+      "at": "move number three",
+      "letter": "3",
+      "word": "BIG HOLDERS"
+    }
+  ],
+  "tags": [],
+  "payoff": "reject peltz",
+  "sfx": [
+    {
+      "at": "his successor",
+      "sound": "impact-bass-2",
+      "gain": 0.22,
+      "offset": 0.45
+    },
+    {
+      "at": "he was back",
+      "sound": "thud",
+      "gain": 0.34
+    },
+    {
+      "at": "three moves kept",
+      "sound": "tom",
+      "gain": 0.22,
+      "semis": -5,
+      "offset": -0.45
+    },
+    {
+      "at": "three moves kept",
+      "sound": "woodblock",
+      "run": [
+        0,
+        3,
+        7
+      ],
+      "step": 0.22,
+      "gain": 0.2
+    },
+    {
+      "at": "bob chapek",
+      "sound": "latch",
+      "gain": 0.24
+    },
+    {
+      "at": "until the end of 2021",
+      "sound": "woodblock",
+      "gain": 0.24,
+      "offset": 0.4
+    },
+    {
+      "at": "less than a year",
+      "sound": "creak",
+      "gain": 0.16,
+      "max_len": 1.4
+    },
+    {
+      "at": "it announces",
+      "sound": "latch",
+      "gain": 0.2,
+      "offset": -0.3
+    },
+    {
+      "at": "chapek is out",
+      "sound": "toggle",
+      "gain": 0.34
+    },
+    {
+      "at": "and iger is returning",
+      "sound": "impact-bass-1",
+      "gain": 0.22,
+      "offset": -0.62
+    },
+    {
+      "at": "disney doesn't fight",
+      "sound": "impact-bass-2",
+      "gain": 0.2,
+      "offset": -0.65
+    },
+    {
+      "at": "disney shareholders cast",
+      "sound": "woodblock",
+      "run": [
+        0,
+        2,
+        4,
+        7
+      ],
+      "step": 0.12,
+      "gain": 0.3,
+      "offset": -0.7
+    },
+    {
+      "at": "returning as ceo",
+      "sound": "chime",
+      "gain": 0.24
+    },
+    {
+      "at": "proven replacement waiting",
+      "sound": "latch",
+      "gain": 0.26
+    },
+    {
+      "at": "a gamble",
+      "sound": "buzzer",
+      "gain": 0.12,
+      "max_len": 0.55
+    },
+    {
+      "at": "iger had",
+      "sound": "chime",
+      "gain": 0.22,
+      "semis": 2
+    },
+    {
+      "at": "nelson peltz",
+      "sound": "scratch",
+      "gain": 0.2,
+      "max_len": 1.0
+    },
+    {
+      "at": "launches a proxy fight",
+      "sound": "clang",
+      "gain": 0.18,
+      "max_len": 1.0
+    },
+    {
+      "at": "no refusal no rally",
+      "sound": "clunk",
+      "gain": 0.24,
+      "semis": 2
+    },
+    {
+      "at": "february 2023",
+      "sound": "computer",
+      "gain": 0.16,
+      "max_len": 2.3,
+      "offset": -0.15
+    },
+    {
+      "at": "seven thousand job cuts",
+      "sound": "rumble",
+      "gain": 0.3,
+      "offset": 1.3,
+      "max_len": 1.6
+    },
+    {
+      "at": "cost savings",
+      "sound": "latch",
+      "gain": 0.26,
+      "semis": -2
+    },
+    {
+      "at": "it delivers it",
+      "sound": "clunk",
+      "gain": 0.32
+    },
+    {
+      "at": "argument is gone",
+      "sound": "snap",
+      "gain": 0.3
+    },
+    {
+      "at": "drops the fight",
+      "sound": "creak",
+      "gain": 0.18,
+      "max_len": 1.2
+    },
+    {
+      "at": "case closed",
+      "sound": "latch",
+      "gain": 0.2,
+      "semis": -4,
+      "offset": 0.5
+    },
+    {
+      "at": "not quite",
+      "sound": "tom",
+      "gain": 0.26,
+      "semis": -3,
+      "offset": -0.15
+    },
+    {
+      "at": "peltz comes back",
+      "sound": "thud",
+      "gain": 0.28
+    },
+    {
+      "at": "shareholder vote",
+      "sound": "clunk",
+      "gain": 0.26,
+      "semis": -3
+    },
+    {
+      "at": "biggest holders and",
+      "sound": "woodblock",
+      "run": [
+        0,
+        3,
+        5,
+        7
+      ],
+      "step": 0.18,
+      "gain": 0.2
+    },
+    {
+      "at": "nowhere to go",
+      "sound": "clang",
+      "gain": 0.22,
+      "max_len": 1.0
+    },
+    {
+      "at": "cast their votes",
+      "sound": "toggle",
+      "gain": 0.3,
+      "semis": 5
+    },
+    {
+      "at": "they vote disney's",
+      "sound": "creak",
+      "gain": 0.14,
+      "max_len": 0.8,
+      "offset": -0.45
+    },
+    {
+      "at": "whole board",
+      "sound": "cheer",
+      "gain": 0.6
+    },
+    {
+      "at": "never gets his seat",
+      "sound": "thud",
+      "gain": 0.3,
+      "semis": -2
+    },
+    {
+      "at": "a replacement waiting",
+      "sound": "tom",
+      "gain": 0.24
+    },
+    {
+      "at": "a replacement waiting",
+      "sound": "pop",
+      "gain": 0.2,
+      "offset": -0.1
+    },
+    {
+      "at": "an argument removed",
+      "sound": "pop",
+      "gain": 0.22,
+      "semis": 2,
+      "offset": -0.1
+    },
+    {
+      "at": "the big holders won",
+      "sound": "pop",
+      "gain": 0.2,
+      "semis": 4,
+      "offset": -0.1
+    },
+    {
+      "at": "an argument removed",
+      "sound": "tom",
+      "gain": 0.24,
+      "semis": 2
+    },
+    {
+      "at": "the big holders won",
+      "sound": "tom",
+      "gain": 0.24,
+      "semis": 4
+    },
+    {
+      "at": "fight ends",
+      "sound": "boom",
+      "gain": 0.36
+    },
+    {
+      "at": "pull an iger",
+      "sound": "pop",
+      "gain": 0.24
+    },
+    {
+      "at": "deal calm",
+      "sound": "chime",
+      "gain": 0.24,
+      "semis": 3
+    },
+    {
+      "at": "dot com",
+      "sound": "clunk",
+      "gain": 0.26,
+      "semis": 3
+    },
+    {
+      "at": "dot com",
+      "sound": "rumble",
+      "gain": 0.28,
+      "offset": 2.45
+    },
+    {
+      "at": "fight ends",
+      "sound": "impact-bass-1",
+      "gain": 0.4
+    },
+    {
+      "at": "one count",
+      "sound": "woodblock",
+      "gain": 0.22,
+      "semis": 5
+    },
+    {
+      "at": "no refusal no rally",
+      "sound": "tom",
+      "gain": 0.42,
+      "semis": -2,
+      "offset": -0.6
+    },
+    {
+      "at": "disney shareholders cast",
+      "sound": "impact-bass-1",
+      "gain": 0.22,
+      "offset": -0.9
+    }
+  ]
+}

@@ -9,7 +9,7 @@ Entertain and teach first; the brand is remembered, not sold. (Decided with the 
 | Length | **60–75 s** (voice about 57–72 s plus the 2.4 s end hold). One story or scenario, 1–2 tactics. |
 | Topics | (1) negotiation / power / manipulation **history stories** (coups, deals, standoffs); (2) **tactic explainers** with no single story (anchoring, the flinch, BATNA, silence, deadlines…); (3) **everyday scenarios** (salary, car dealer, rent, freelancer rates, refunds…). |
 | Voice | `en-US-Chirp3-HD-Sadachbia`, rate about 1.1 (never Charon). |
-| Look | `templates/brick-cinematic`, LDraw minifigs, props bar = `disney-iger` r7 (`assets/props-kit.js`: ≥ 6 asset types per set, ≥ 3 unique to that set). 5–7 sets fit 60–75 s. |
+| Look | `templates/brick-cinematic`, LDraw minifigs, quality bar = `examples/dotcom-crash-lego-r6/` (overall: a visual brick metaphor for every beat, cause → effect shots, a callback loop) + `examples/disney-iger-r7/` (props; `assets/props-kit.js`: ≥ 6 asset types per set, ≥ 3 unique to that set). 5–7 sets fit 60–75 s. |
 | Hook | **Triple hook** in 0–3 s: visual reveal from frame 0, spoken line 1 ≤ 14 words, hook title that adds (never repeats) and works on mute. |
 | Brand recall | **Series stinger:** a small "DEALCALM STORIES" badge in the top-left corner for the first ~3 s (`scripts/series_badge.py <slug>`). |
 | CTA (soft) | The story's takeaway line, then ONE short brand line, e.g. *"Practice moves like this with Deal Calm."* (≤ 8 words; spoken "Deal Calm"). **No "App Store" read-out, no URL read-out.** The end card shows `DealCalm` / `App Store · dealcalm.com`. A generic DealCalm host minifig may appear on the end set; never the real person from the story. Never claim "free". |

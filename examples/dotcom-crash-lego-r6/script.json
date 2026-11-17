@@ -1,0 +1,131 @@
+{
+ "voice": "en-US-Chirp3-HD-Enceladus",
+ "rate": 1.22,
+ "lines": [
+  {
+   "id": "hook",
+   "gap": 0.05,
+   "text": "In 1999, three letters could make a stock jump: dot-com."
+  },
+  {
+   "id": "stakes",
+   "gap": 0.3,
+   "text": "Then the floor fell out. The warning sign? A sock puppet."
+  },
+  {
+   "id": "money",
+   "gap": 0.05,
+   "text": "Investors threw money at internet companies with little or no profit."
+  },
+  {
+   "id": "nobody",
+   "gap": 0.1,
+   "text": "Profits? Not the question. Yet."
+  },
+  {
+   "id": "globe",
+   "gap": 0.05,
+   "text": "Proof? November 1998: the globe dot-com rose about 606 percent. On day one."
+  },
+  {
+   "id": "nasdaq",
+   "gap": 0.1,
+   "text": "And in 1999 alone, the Nasdaq climbed about 85%."
+  },
+  {
+   "id": "pets",
+   "gap": 0.05,
+   "text": "Now, about that sock puppet. Meet Pets dot-com."
+  },
+  {
+   "id": "cost",
+   "gap": 0.05,
+   "text": "It sold pet food for less than it paid for it,"
+  },
+  {
+   "id": "ship",
+   "gap": 0.05,
+   "text": "then shipped those heavy bags for free."
+  },
+  {
+   "id": "lost",
+   "gap": 0.1,
+   "text": "Lose money on the food. Pay to ship it. Repeat."
+  },
+  {
+   "id": "puppet",
+   "gap": 0.05,
+   "text": "But it had the famous sock puppet, and a Super Bowl ad."
+  },
+  {
+   "id": "ipo",
+   "gap": 0.1,
+   "text": "February 2000: it went public at $11 a share."
+  },
+  {
+   "id": "peak",
+   "gap": 0.05,
+   "text": "Weeks later, on March 10, the Nasdaq peaked above five thousand."
+  },
+  {
+   "id": "music",
+   "gap": 0.1,
+   "text": "Then the music stopped."
+  },
+  {
+   "id": "fed",
+   "gap": 0.05,
+   "text": "Why? In under a year, the Fed raised interest rates six times."
+  },
+  {
+   "id": "cheap",
+   "gap": 0.05,
+   "text": "Cheap money dried up."
+  },
+  {
+   "id": "asked",
+   "gap": 0.1,
+   "text": "And then came the yet. Investors asked one question: where are the profits?"
+  },
+  {
+   "id": "shut",
+   "gap": 0.05,
+   "text": "Pets dot-com shut down that November, nine months after going public."
+  },
+  {
+   "id": "webvan",
+   "gap": 0.05,
+   "text": "Webvan, the grocery delivery startup? Bankrupt in July 2001."
+  },
+  {
+   "id": "amazon",
+   "gap": 0.1,
+   "text": "Even Amazon's stock fell more than 90%. Hold that thought."
+  },
+  {
+   "id": "bottom",
+   "gap": 0.1,
+   "text": "In October 2002, the Nasdaq hit bottom: down about 78%."
+  },
+  {
+   "id": "years",
+   "gap": 0.1,
+   "text": "How long to climb back above the old peak? Fifteen years. April 2015."
+  },
+  {
+   "id": "hype",
+   "gap": 0.05,
+   "text": "But the internet didn't die. The hype did."
+  },
+  {
+   "id": "giants",
+   "gap": 0.1,
+   "text": "And Amazon, the one that fell more than 90%? It became a giant."
+  },
+  {
+   "id": "end",
+   "gap": 0.0,
+   "text": "So when everyone says this time is different, remember the sock puppet. Follow, and you'll spot the next bubble."
+  }
+ ]
+}
