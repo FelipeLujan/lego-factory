@@ -538,6 +538,10 @@ async def run_video(slug):
     return final
 
 
+async def sync_output():   # copy finished finals + POST.md into <workspace>/output/
+    await sh([VPY, "scripts/sync_output.py"], timeout=900)
+
+
 async def guarded(slug):
     async with sem:
         try:
@@ -657,6 +661,7 @@ engage strangers). Never play audio/video.""", schema=TOPIC_SCHEMA, role="Topic 
             r = await guarded(it["slug"])
             await mark(it["slug"], status="error" if r.get("error") else "done", finished=time.strftime("%Y-%m-%d %H:%M"),
                        overall=round(r.get("overall", 0) or 0, 2), mp4=r.get("mp4"), error=r.get("error"))
+            await sync_output()
 
     await parallel(list(range(CONC)), worker)
 else:

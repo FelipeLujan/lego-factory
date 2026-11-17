@@ -59,6 +59,7 @@ npx hyperframes render -o renders/<project-name>-v1.mp4
 | `scripts/setup_mac.sh`, `scripts/setup_windows.ps1` | One-time setup after cloning |
 | `scripts/render_benchmark.py` | Tunes render workers / GPU encoding for the current machine |
 | `scripts/series_badge.py` | Adds the "DEALCALM STORIES" corner stinger |
+| `output/` (local, not in git) | **Finished videos to post**: `dealcalm-stories/<slug>.mp4 + .POST.md` (TOFU), `dealcalm-long/`, `other/`. Filled by `scripts/sync_output.py` (the council loop runs it after every finished video) |
 | `examples/` | **Approved reference videos** (source + stills): `dotcom-crash-lego-r6` (overall bar), `disney-iger-r7` (props bar) |
 | `docs/DEALCALM-TOFU.md` | **The main production brief**: DealCalm top-of-funnel videos |
 | `scripts/council_pack.py` | Turns a render into a council review pack (`<project>/council/r<N>/`: contact sheets, chapter stills, motion strips, AUDIO.md, PACK.md) |
