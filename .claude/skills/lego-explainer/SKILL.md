@@ -9,6 +9,13 @@ Read with `/hyperframes` and `/tiktok-explainer`. Style guide: `templates/brick-
 Council process: `docs/COUNCIL.md`. DealCalm series rules + fact sheets: `docs/DEALCALM-SERIES.md`.
 These lessons come from the Starship videos (10 rounds) and the 15-video DealCalm revamp (Nov 2026; about 4,100 council findings mined).
 
+## 0. The main goal: DealCalm top-of-funnel videos
+New DealCalm videos follow **`docs/DEALCALM-TOFU.md`**:
+- 60–75 s; topics are negotiation/power history stories, tactic explainers and everyday scenarios;
+- a soft CTA line ("Practice moves like this with Deal Calm"; App Store / URL only on the end card) and the "DEALCALM STORIES" stinger (`scripts/series_badge.py`);
+- triple hook, max 3 council rounds, `POST.md` post copy.
+Run them with `scripts/lego_council_workflow.py` + `topics` (it researches the facts with web search, leaves unsure claims out and proceeds without waiting).
+
 ## 1. Start / migrate
 - New video: `.venv/bin/python scripts/new_video.py <name> --template brick-cinematic`.
 - Existing brick-story folder: `.venv/bin/python scripts/upgrade_to_cinematic.py <name>`. It backs up to `_pre-cinematic/`, keeps the old scene as `assets/scene.brickstory.js`, copies the engine and the full sfx library, and fixes the index.html script order: film → ldraw-parts → brick-kit → fx-kit → ldraw-kit → scene.
@@ -87,6 +94,7 @@ Ranked by how often seats flagged them:
 - Never play audio/video out loud (no afplay, say, ffplay, open).
 
 ## Render speed (benchmark 2026-11-16, Mac M1 16 GB, ai-boom full 110 s)
+> On any other machine (e.g. the Windows PC with an AMD GPU) run `scripts/render_benchmark.py <finished-project>` once and pass its recommended `workers` / `gpu_encode` to the workflow. On Windows `gpu_encode` defaults to off until benchmarked.
 | Setting | Render time |
 |---|---|
 | 30 fps, 1.5× pixel ratio, auto workers (old council default) | ~6 min |

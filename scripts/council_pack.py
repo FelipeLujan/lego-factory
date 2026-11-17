@@ -55,8 +55,11 @@ dur = float(
 )
 
 FONT_CANDIDATES = [
-    "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
+    "/System/Library/Fonts/Supplemental/Arial Bold.ttf",   # macOS
     "/System/Library/Fonts/Helvetica.ttc",
+    "C:/Windows/Fonts/arialbd.ttf",                        # Windows
+    "C:/Windows/Fonts/arial.ttf",
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", # Linux / WSL
 ]
 font = next((f for f in FONT_CANDIDATES if os.path.exists(f)), FONT_CANDIDATES[0])
 font_esc = font.replace(":", "\\:").replace("'", "\\'")
@@ -164,7 +167,7 @@ if os.path.exists(pkg_path):
         hf_pkg = m_pkg.group(0)
 
 lo = subprocess.run(
-    ["npx", "--yes", hf_pkg, "audio", mp4, "--json"],
+    ["npx.cmd" if os.name == "nt" else "npx", "--yes", hf_pkg, "audio", mp4, "--json"],
     capture_output=True,
     text=True,
     cwd=P,

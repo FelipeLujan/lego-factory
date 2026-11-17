@@ -1,5 +1,7 @@
 # DealCalm story series: brief + fact sheets
 
+> **New videos follow `docs/DEALCALM-TOFU.md`** (decided 2026-11-17): 60–75 s, soft brand CTA (no App Store read-out), triple hook, "DEALCALM STORIES" stinger, max 3 council rounds, POST.md. The ~110 s full-CTA format below is what the 15 Nov-2026 revamped videos use. The fact sheets below stay valid for new TOFU cuts.
+
 These are short story videos for **DealCalm** (`dealcalm.com` & Apple App Store) on Instagram Reels and YouTube Shorts. Each one is a verified real-world story about negotiation, corporate coups, power, or manipulation, built in **cinematic LEGO video-game style (`templates/brick-cinematic`)**.
 
 ## Format (every revamped video)

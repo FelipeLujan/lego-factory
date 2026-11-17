@@ -17,7 +17,9 @@ git clone <remote> "lego factory" && cd "lego factory"
 zsh scripts/setup_mac.sh        # .venv from requirements.txt + checks ffmpeg, Node 22+, gcloud, HyperFrames 0.9.46
 gcloud auth login && gcloud config set project <your-project>   # Google Cloud TTS (Text-to-Speech API enabled)
 ```
-Then open the folder in Antigravity (`agy`) and ask for a video, e.g. *"Make a LEGO-style explainer about the 2008 financial crisis, ~100 s, Enceladus voice, run the legoCouncil (max 5 rounds)."*
+On **Windows** (PowerShell): `git clone https://github.com/FelipeLujan/lego-factory.git; cd lego-factory; powershell -ExecutionPolicy Bypass -File scripts\setup_windows.ps1`, then `gcloud auth login`. On the first video, ask the agent to run `scripts/render_benchmark.py` to tune render settings for that GPU.
+
+Then open the folder in Antigravity (`agy`) and ask for a video, for example *"Make 3 DealCalm TOFU videos: the Getty ransom haggle, anchoring explained, negotiating a raise"* (see `docs/DEALCALM-TOFU.md`). Another example: e.g. *"Make a LEGO-style explainer about the 2008 financial crisis, ~100 s, Enceladus voice, run the legoCouncil (max 5 rounds)."*
 
 What Antigravity picks up from the repo automatically:
 - `AGENTS.md`: the house rules (always loaded).
@@ -54,6 +56,10 @@ npx hyperframes render -o renders/<project-name>-v1.mp4
 | `scripts/upgrade_to_cinematic.py` | Moves an existing brick-story project onto the brick-cinematic engine (backs up the old files to `<project>/_pre-cinematic/`) |
 | `scripts/lego_council_workflow.py` | The automated council loop (builder → render → pack → 6 seats → feedback, max 5 rounds, resumable). Run with the agent's `run_workflow` tool |
 | `.agents/skills/lego-explainer/` | **Lessons for LEGO videos**: most-flagged council defects, CTA rules, loudness recipe, voices, disk/TMPDIR |
+| `scripts/setup_mac.sh`, `scripts/setup_windows.ps1` | One-time setup after cloning |
+| `scripts/render_benchmark.py` | Tunes render workers / GPU encoding for the current machine |
+| `scripts/series_badge.py` | Adds the "DEALCALM STORIES" corner stinger |
+| `docs/DEALCALM-TOFU.md` | **The main production brief**: DealCalm top-of-funnel videos |
 | `scripts/council_pack.py` | Turns a render into a council review pack (`<project>/council/r<N>/`: contact sheets, chapter stills, motion strips, AUDIO.md, PACK.md) |
 | `.agents/agents/*-legoCouncil/` | The council subagents: `builder-legoCouncil` (makes/fixes the video) + 6 blind seats (art director, brick critic, short-form editor, social copywriter, LEGO game feel, particles & detail) |
 | `scripts/fetch_reference.py` | Downloads, transcribes and contact-sheets a reference video |

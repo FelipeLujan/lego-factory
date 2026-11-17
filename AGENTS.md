@@ -6,6 +6,7 @@ This workspace makes **vertical TikTok explainer videos** with HyperFrames (HTML
 
 | Task | Do this |
 |---|---|
+| **Make DealCalm videos (the main goal: top-of-funnel for the DealCalm Instagram/Shorts)** | Read **`docs/DEALCALM-TOFU.md`** (60–75 s, soft CTA, triple hook, series stinger, 3 council rounds, POST.md) and run `scripts/lego_council_workflow.py` with `topics` (it researches, scaffolds, builds, runs the council, renders the final cut and writes the post copy). |
 | Make a new video | Follow **`PLAYBOOK.md`** step by step. Start with `.venv/bin/python scripts/new_video.py <name>`. |
 | Delegate a video to another AI | Follow **`docs/DELEGATION.md`**: send its brief, then review the result before the person sees it. |
 | Change an existing video | Read that project's `AGENTS.md` "This project" section, then PLAYBOOK section 9. |
@@ -38,6 +39,7 @@ Agents that support skills: also load `/hyperframes` (the framework contract) an
 
 - **`<workspace>` = this repo's root** (the folder that holds this AGENTS.md; on the original Mac it is `/Volumes/Lexar/lego factory`). Every path written `<workspace>/...` in the docs, agents and skills means this folder.
 - **New machine?** Run `zsh scripts/setup_mac.sh` once (it creates `.venv/` from `requirements.txt` and checks ffmpeg, Node, gcloud and HyperFrames). Video projects and renders are **not** in git: each new video is a fresh folder made by `scripts/new_video.py` and ignored by `.gitignore`.
+- **Windows:** run `powershell -ExecutionPolicy Bypass -File scripts\setup_windows.ps1` once. The venv Python is `.venv\Scripts\python.exe` (from a project: `..\.venv\Scripts\python.exe`), npx is `npx.cmd`, and the temp dir is set with `$env:TEMP` / `$env:TMP` (instead of `TMPDIR`). On the first video, run `scripts/render_benchmark.py <project>` to tune `workers` / `gpu_encode` for that GPU (the M1 numbers don't transfer to AMD).
 - **macOS (`zsh`).** Python virtualenv at `.venv/` (`numpy`, `faster-whisper`, `av<19`, `yt-dlp`: run with `.venv/bin/python`), `ffmpeg`, Node 22+ and `npx --yes hyperframes@0.9.46`.
 - **GCP:** `tools/build.py` gets the token from `gcloud auth print-access-token` and the project from `gcloud config get-value project` (or `"gcp_project"` in script.json). Each machine needs `gcloud auth login` and a project with the Text-to-Speech API enabled (the original Mac uses `optical-bond-240720`).
 - **yt-dlp:** `.venv/bin/python -m yt_dlp` (`scripts/fetch_reference.py` wraps it).

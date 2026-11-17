@@ -12,11 +12,21 @@ DOC = f"{WS}/docs/DEALCALM-SERIES.md"
 A = globals().get("args") or {}
 REPORT = A.get("report") or f"{WS}/council-report.md"
 SCRATCH = A.get("scratch") or f"{WS}/.council-scratch"
-MAX_ROUNDS = int(A.get("max_rounds", 5))
+MAX_ROUNDS = int(A.get("max_rounds", 3))   # TOFU decision 2026-11-17: most of the gain lands in rounds 1-3
 VIDEOS = A.get("videos") or [
     "altman-ousted", "blockbuster-netflix", "buffett-berkshire", "jobs-coup", "jordan-nike", "gates-ibm", "disney-iger",
     "ford-ferrari", "coke-pepsi", "hp-pretexting", "getty-ransom", "cuban-missile", "fbi-negotiation", "dirty-tactics", "car-dealer"]
-CONC = int(A.get("concurrency", 4))
+CONC = int(A.get("concurrency", 3))       # batches of 2-3 videos
+TOPICS = A.get("topics") or {}             # {slug: "topic + category"} -> research -> docs/facts/<slug>.md -> scaffold -> council (TOFU)
+TOFU = set(A.get("tofu") or []) | set(TOPICS)  # DealCalm top-of-funnel videos (docs/DEALCALM-TOFU.md)
+if TOPICS and not A.get("videos"):
+    VIDEOS = list(TOPICS)
+WIN = os.name == "nt"
+NPX = "npx.cmd" if WIN else "npx"
+VPY = os.path.join(WS, ".venv", "Scripts", "python.exe") if WIN else os.path.join(WS, ".venv", "bin", "python")
+PYREL = r"..\.venv\Scripts\python.exe" if WIN else "../.venv/bin/python"
+TMPHINT = (f'(PowerShell: $env:TEMP="{WS}\\.render-tmp"; $env:TMP="{WS}\\.render-tmp")' if WIN
+           else f'TMPDIR="{WS}/.render-tmp/"')
 
 SEATS = [("art-director-legoCouncil", "AD"), ("brick-critic-legoCouncil", "BC"), ("shortform-editor-legoCouncil", "SE"),
          ("social-copywriter-legoCouncil", "SC"), ("lego-game-feel-legoCouncil", "GF"), ("lego-particles-detail-legoCouncil", "PD")]
@@ -39,7 +49,7 @@ def report(text):
 
 RTMP = f"{WS}/.render-tmp"
 os.makedirs(RTMP, exist_ok=True)
-ENV = dict(os.environ, TMPDIR=RTMP + "/")
+ENV = dict(os.environ, TMPDIR=RTMP + os.sep, TEMP=RTMP, TMP=RTMP)
 
 
 async def sh(cmd, cwd=WS, timeout=3600):
@@ -52,12 +62,17 @@ async def sh(cmd, cwd=WS, timeout=3600):
         return 124, f"timeout after {timeout}s"
 
 
-BRIEFS = A.get("brief_files") or {}   # {slug: abs path of a brief + fact sheet .md} -> general (non-DealCalm) mode
+BRIEFS = dict(A.get("brief_files") or {})   # {slug: abs path of a brief + fact sheet .md} -> general (non-DealCalm-revamp) mode
+for _slug in TOPICS:
+    BRIEFS.setdefault(_slug, os.path.join(WS, "docs", "facts", f"{_slug}.md"))
 
 
 def fact_sheet(slug):
     if slug in BRIEFS:
-        return open(BRIEFS[slug], encoding="utf-8").read()
+        txt = open(BRIEFS[slug], encoding="utf-8").read()
+        if slug in TOFU:
+            txt = open(os.path.join(WS, "docs", "DEALCALM-TOFU.md"), encoding="utf-8").read() + "\n\n---\n\n" + txt
+        return txt
     txt = open(DOC, encoding="utf-8").read()
     m = re.search(rf"^## \d+\. {re.escape(slug)}:.*?(?=^## )", txt, re.S | re.M)
     sec = m.group(0).strip() if m else ""
@@ -132,7 +147,7 @@ REQUIREMENTS
      no pause below -35 dB in the hook, payoff or ending; no digital silence under the end card.
    - Camera steady on captions (the stage adds only chapter push/whip). Pure function of t, no Math.random. No logos.
    Write scene.js in chunks of <= ~150 lines, saving each step; run `node --check` on every JS file.
-4. Build & verify (from `{WS}/{slug}`, prefix npx commands with `TMPDIR="{WS}/.render-tmp/"`): `../.venv/bin/python tools/build.py`
+4. Build & verify (from `{WS}/{slug}`, point the temp dir at the external/work drive first: `{TMPHINT}`): `{PYREL} tools/build.py`
    (fix every warning), `npx --yes hyperframes@0.9.46 check --json` (must be ok), then
    `npx --yes hyperframes@0.9.46 snapshot --at <14-18 plain seconds: hook, every set, every milestone, the ending> --no-end --output .hyperframes/snaps`
    and LOOK at every PNG (view_file). Fix the section-4 defects and re-snapshot.
@@ -202,13 +217,13 @@ REQUIREMENTS
    - Known pitfalls: set `frustumCulled = false` on InstancedMesh that spans a large area; large ground planes `studs: false`
      with real stud geometry near camera; keep normalScale <= 0.25 on distant planes; opaque ABS/metal (no accidental glass).
    Write scene.js in chunks of <= ~150 lines (sets, cast, update/camera), saving each step; run `node --check assets/scene.js`.
-4. Build & verify (from `{WS}/{slug}`): `../.venv/bin/python tools/build.py` (Google TTS + whisper word timings, ~1-2 min; fix
+4. Build & verify (from `{WS}/{slug}`): `{PYREL} tools/build.py` (Google TTS + whisper word timings, ~1-2 min; fix
    every warning), `npx --yes hyperframes@0.9.46 check --json` (must be ok), then
    `npx --yes hyperframes@0.9.46 snapshot --at <12-16 comma-separated plain seconds: hook, every set, every move, the CTA> --no-end --output .hyperframes/snaps`
    and LOOK at every PNG yourself (view_file). Fix black voids, hidden/cut-off faces, clipping, HUD/caption collisions, washed-out
    or crushed lighting, then re-snapshot the fixed moments.
-5. The internal disk is nearly full: prefix every npx/hyperframes command with
-   `TMPDIR="{WS}/.render-tmp/"` so temp files go to the external drive, and never leave big files outside the project.
+5. The internal disk is nearly full: point the temp dir at `{WS}/.render-tmp` before every npx/hyperframes command
+   (`{TMPHINT}`) so temp files go to the external drive, and never leave big files outside the project.
    DO NOT render the MP4: the orchestrator renders after you finish (one shared GPU). NEVER play audio or video (no afplay, say,
    ffplay, open). Do not touch other project folders.
 6. Keep `{WS}/{slug}/REVAMP_NOTES.md` current: per round what changed, the set list with time ranges, the CTA text, open issues.
@@ -225,7 +240,7 @@ screenshots and text only (never open .mp4/.wav files, never read .js/.html sour
 Read `{pack}/PACK.md`, then EVERY image it lists (contact sheets, chapter stills, motion strips), then `{pack}/AUDIO.md`, and compare
 against the 7 LEGO video-game style references: {', '.join(REFS)}.
 
-{CTX_GENERAL if slug in BRIEFS else CTX_DEALCALM}
+{CTX_TOFU if slug in TOFU else (CTX_GENERAL if slug in BRIEFS else CTX_DEALCALM)}
 Fact sheet (the only facts the script may state; flag anything stated that is not supported here):
 <<<
 {fact_sheet(slug)}
@@ -243,6 +258,13 @@ question: VISUAL (ch-00 + motion-00: motion or a reveal from frame 0, one badge 
 curiosity gap, no dead air) and TEXT (the hook title: it adds a twist or number, never repeats line 1 or spoils the payoff, and
 works on mute). Rate each strong / weak / missing in a finding, and put exact rewrites (line 1, hook title line1/line2, an
 opening-shot direction) in copy_rewrites."""
+
+CTX_TOFU = """Context (client requirements, not defects): this is a DealCalm TOP-OF-FUNNEL LEGO video for Instagram Reels / YouTube Shorts /
+TikTok, made to win strangers' attention for the DealCalm negotiation app. Target 60-75 s. A small "DEALCALM STORIES" badge in the
+first ~3 s is the series stinger. The ending is intentionally SOFT: the story's takeaway plus one short brand line (e.g. "Practice
+moves like this with Deal Calm"), with the URL / App Store only on the end card. Judge how well it is executed (does it feel earned,
+not like an ad?), never its existence. Real public figures appear as LEGO minifigures with neutral portrayal; no third-party or
+toy-brand logos. Background music is intentionally absent for now: judge voice + effects. The brief below lists the facts."""
 
 CTX_GENERAL = """Context: this is a LEGO video-game style tech-history explainer for TikTok / YouTube Shorts / Instagram Reels (NOT a DealCalm
 video; no product CTA: it should end with a subtle follow pull per its brief). Real public figures appear as LEGO minifigures with
@@ -290,6 +312,7 @@ async def run_seat(slug, n, seat):
 
 DRAFT_FPS = str(A.get("draft_fps", 10))      # council rounds: seats only see 1.5 s contact sheets + 0.25 s motion strips
 DRAFT_PR = float(A.get("draft_pixel_ratio", 1.0))
+GPU_ENC = bool(A.get("gpu_encode", not WIN))  # VideoToolbox verified on the M1; on Windows run scripts/render_benchmark.py first
 WORKERS = str(A.get("workers", 4))           # benchmark 2026-11-16 (M1, 16 GB): 4 fastest; 6-8 slower; 1 slowest
 
 
@@ -315,8 +338,8 @@ async def render(slug, n, final=False):
         if not final:
             set_profile(slug, DRAFT_PR)
         try:
-            code, txt = await sh(["npx", "--yes", "hyperframes@0.9.46", "render", "--output", out, "--fps", "30" if final else DRAFT_FPS,
-                                  "--quality", "standard", "--workers", WORKERS] + ([] if final else ["--gpu"]),
+            code, txt = await sh([NPX, "--yes", "hyperframes@0.9.46", "render", "--output", out, "--fps", "30" if final else DRAFT_FPS,
+                                  "--quality", "standard", "--workers", WORKERS] + (["--gpu"] if (GPU_ENC and not final) else []),
                                  cwd=f"{WS}/{slug}", timeout=5400)   # drafts: VideoToolbox encode (PSNR 45 dB vs software)
         finally:
             set_profile(slug, None)
@@ -372,7 +395,64 @@ def feedback_prompt(n, res, dur, loud):
             "Rebuild, check, snapshot-verify the changed moments, update REVAMP_NOTES.md, then finish. Do not render.")
 
 
+RESEARCH_SCHEMA = {"type": "object", "properties": {"facts_md": {"type": "string"}, "title": {"type": "string"},
+                   "unsure": {"type": "array", "items": {"type": "string"}}}, "required": ["facts_md", "title", "unsure"]}
+POST_SCHEMA = {"type": "object", "properties": {"post_md": {"type": "string"}}, "required": ["post_md"]}
+
+
+async def research_topic(slug):
+    fp = BRIEFS[slug]
+    if os.path.exists(fp):
+        return
+    phase(f"{slug} · research")
+    r = await agent(f"""Research a DealCalm top-of-funnel LEGO video. Topic for `{slug}`: {TOPICS[slug]}
+Read {WS}/docs/DEALCALM-TOFU.md (format: 60-75 s, soft CTA, triple hook) and use docs/DEALCALM-SERIES.md as the model for a fact
+sheet. Use web search to VERIFY every fact (prefer primary or reputable sources: court records, company filings, major newspapers,
+Harvard PON, peer-reviewed research, FBI CNU, well-known books). Then return `facts_md`, a markdown brief + fact sheet with:
+# <slug>: <title>; ## Brief (category, hook idea <= 14 words, story arc for 60-75 s, 1-2 tactics, a one-line takeaway, a soft CTA
+line idea, 5-7 brick-built set ideas, cast as neutral minifigs); ## Facts (only verified facts, each with its source in brackets,
+keep hedges like "reportedly"); ## Do not say (UNSURE or disputed claims, left out). For tactic explainers / everyday scenarios:
+cite the research or present a dramatized "Imagine..." example; never invent statistics. Never play audio/video.""",
+                    schema=RESEARCH_SCHEMA, role=f"Researcher · {slug}", type_name="self", model="inherit")
+    os.makedirs(os.path.dirname(fp), exist_ok=True)
+    open(fp, "w", encoding="utf-8").write(r["facts_md"])
+    report(f"### {slug}: research done\n\nFact sheet: `{fp}` ({r['title']}). Left out as unsure: {r['unsure'] or 'none'}")
+
+
+async def scaffold(slug):
+    if os.path.isdir(os.path.join(WS, slug)):
+        return
+    code, txt = await sh([VPY, "scripts/new_video.py", slug, "--template", "brick-cinematic"], timeout=300)
+    if code != 0:
+        raise RuntimeError(f"new_video.py failed: {txt[-800:]}")
+    if slug in TOFU:
+        await sh([VPY, "scripts/series_badge.py", slug], timeout=60)
+
+
+async def write_post(slug, final):
+    if slug not in TOFU:
+        return
+    phase(f"{slug} · post copy")
+    try:
+        script = json.load(open(os.path.join(WS, slug, "script.json"), encoding="utf-8"))
+        lines = "\n".join(l["text"] for l in script["lines"])
+        r = await agent(f"""Write the Instagram Reels / YouTube Shorts post copy for the DealCalm top-of-funnel LEGO video `{slug}`.
+The spoken script:\n<<<\n{lines}\n>>>\nFacts allowed (state nothing else):\n<<<\n{fact_sheet(slug)}\n>>>
+Return post_md (markdown) with: ## Caption (a scroll-stopping first line that is NOT the video's hook word for word, 2-3 short
+lines of value, then a soft CTA such as "Practice this with DealCalm (link in bio / dealcalm.com)"); ## Hashtags (5-8, a mix of
+niche and broad: negotiation, business history, etc.); ## Pinned comment (a question that invites replies); ## Shorts title
+(<= 60 chars). No "free" claims, no unverified facts, no emojis spam (0-2 emojis max).""",
+                        schema=POST_SCHEMA, role=f"Post copy · {slug}", type_name="social-copywriter-legoCouncil", model="inherit")
+        open(os.path.join(WS, slug, "POST.md"), "w", encoding="utf-8").write(r["post_md"])
+        report(f"### {slug}: post copy\n\n`{os.path.join(WS, slug, 'POST.md')}`")
+    except Exception as e:
+        log(f"[{slug}] post copy failed: {e}")
+
+
 async def run_video(slug):
+    if slug in TOPICS:
+        await research_topic(slug)
+    await scaffold(slug)
     state = {"b": await make_builder(slug)}
     rs = RESUME.get(slug, {})
     start = int(rs.get("round", 1))
@@ -412,7 +492,7 @@ async def run_video(slug):
             final["error"] = "render failed"
             break
         dur = duration(mp4)
-        code, txt = await sh([f"{WS}/.venv/bin/python", "scripts/council_pack.py", slug, str(n), mp4], timeout=1800)
+        code, txt = await sh([VPY, "scripts/council_pack.py", slug, str(n), mp4], timeout=1800)
         if code != 0:
             report(f"### {slug}: council_pack failed in round {n}\n```\n{txt[-1500:]}\n```")
             final["error"] = "pack failed"
@@ -444,6 +524,7 @@ async def run_video(slug):
             report(f"### {slug}: final delivery render\n\n`{fm}` · {duration(fm):.1f} s · 30 fps · full quality (council rounds were 10 fps drafts)")
         else:
             report(f"### {slug}: final 30 fps render failed\n```\n{ferr[-1200:]}\n```")
+    await write_post(slug, final)
     return final
 
 

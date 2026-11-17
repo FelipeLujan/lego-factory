@@ -86,3 +86,11 @@ Run `scripts/lego_council_workflow.py` with the `run_workflow` tool (`ScriptPath
 - **Expect** round 1 to land about 5.9–6.3 and round 5 about 6.9–7.1 (DealCalm revamp, 12 videos at the cap, none passed). Most of the gain comes in rounds 1–3, so fix the skill's section-4 list before round 1.
 - **Disk:** check `df -h /System/Volumes/Data` for ≥ 20–25 GB free before a batch. Agent logs grow 1–5 GB/hour on the internal disk; pause below about 3 GB (never delete the person's files).
 - **Draft renders:** council rounds render at 10 fps, 1.0× pixel ratio, 4 workers, `--gpu` encode (about 1:20 for 110 s, instead of about 6 min). The loop ends with one 30 fps full-quality `renders/<slug>-r<N>-final.mp4`, which is the file to post. Packs are capped at 16 chapter stills (540 px) to save SSD space; env `COUNCIL_MAX_STILLS` overrides.
+- **TOFU / new topics (default for DealCalm):** `Args = {"topics": {"getty-haggle": "Getty ransom haggle 1973 (history story)", "anchoring": "anchoring explained (tactic explainer)"}}`. For each slug the loop:
+  1. researches the topic with web search into `docs/facts/<slug>.md` (unsure claims are left out, no waiting);
+  2. scaffolds the project and adds the series badge;
+  3. runs the builder and the council, **max 3 rounds** (the default since 2026-11-17);
+  4. renders the 30 fps final;
+  5. writes `<slug>/POST.md` (caption, hashtags, pinned comment, Shorts title).
+- **Batch size:** `concurrency` defaults to 3 (batches of 2–3 videos).
+- **Windows:** the loop uses `npx.cmd`, `.venv\Scripts\python.exe` and `TEMP`/`TMP`. `gpu_encode` stays off until `scripts/render_benchmark.py` says it helps on that GPU.
