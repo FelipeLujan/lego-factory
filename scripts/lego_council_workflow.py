@@ -17,10 +17,10 @@ VIDEOS = A.get("videos") or [
     "altman-ousted", "blockbuster-netflix", "buffett-berkshire", "jobs-coup", "jordan-nike", "gates-ibm", "disney-iger",
     "ford-ferrari", "coke-pepsi", "hp-pretexting", "getty-ransom", "cuban-missile", "fbi-negotiation", "dirty-tactics", "car-dealer"]
 CONC = int(A.get("concurrency", 3))       # batches of 2-3 videos
-TOPICS = A.get("topics") or {}             # {slug: "topic + category"} -> research -> docs/facts/<slug>.md -> scaffold -> council (TOFU)
-TOFU = set(A.get("tofu") or []) | set(TOPICS)  # DealCalm top-of-funnel videos (docs/DEALCALM-TOFU.md)
-if TOPICS and not A.get("videos"):
-    VIDEOS = list(TOPICS)
+TOPIC_REQ = A.get("topics") or {}             # {slug: "topic + category"} -> research -> docs/facts/<slug>.md -> scaffold -> council (TOFU)
+TOFU = set(A.get("tofu") or []) | set(TOPIC_REQ)  # DealCalm top-of-funnel videos (docs/DEALCALM-TOFU.md)
+if TOPIC_REQ and not A.get("videos"):
+    VIDEOS = list(TOPIC_REQ)
 WIN = os.name == "nt"
 NPX = "npx.cmd" if WIN else "npx"
 VPY = os.path.join(WS, ".venv", "Scripts", "python.exe") if WIN else os.path.join(WS, ".venv", "bin", "python")
@@ -63,7 +63,7 @@ async def sh(cmd, cwd=WS, timeout=3600):
 
 
 BRIEFS = dict(A.get("brief_files") or {})   # {slug: abs path of a brief + fact sheet .md} -> general (non-DealCalm-revamp) mode
-for _slug in TOPICS:
+for _slug in TOPIC_REQ:
     BRIEFS.setdefault(_slug, os.path.join(WS, "docs", "facts", f"{_slug}.md"))
 
 
@@ -412,7 +412,7 @@ async def research_topic(slug):
     if os.path.exists(fp):
         return
     phase(f"{slug} · research")
-    r = await agent(f"""Research a DealCalm top-of-funnel LEGO video. Topic for `{slug}`: {TOPICS[slug]}
+    r = await agent(f"""Research a DealCalm top-of-funnel LEGO video. Topic for `{slug}`: {TOPIC_REQ[slug]}
 Read {WS}/docs/DEALCALM-TOFU.md (format: 60-75 s, soft CTA, triple hook) and use docs/DEALCALM-SERIES.md as the model for a fact
 sheet. Use web search to VERIFY every fact (prefer primary or reputable sources: court records, company filings, major newspapers,
 Harvard PON, peer-reviewed research, FBI CNU, well-known books). Then return `facts_md`, a markdown brief + fact sheet with:
@@ -459,7 +459,7 @@ niche and broad: negotiation, business history, etc.); ## Pinned comment (a ques
 
 
 async def run_video(slug):
-    if slug in TOPICS:
+    if slug in TOPIC_REQ:
         await research_topic(slug)
     await scaffold(slug)
     state = {"b": await make_builder(slug)}
@@ -599,7 +599,7 @@ if QUEUE_FILE:
         if it.get("brief_file"):
             BRIEFS[slug] = it["brief_file"]
         if it.get("topic"):
-            TOPICS[slug] = it["topic"]
+            TOPIC_REQ[slug] = it["topic"]
             BRIEFS.setdefault(slug, os.path.join(WS, "docs", "facts", f"{slug}.md"))
         if it.get("tofu", True):
             TOFU.add(slug)
