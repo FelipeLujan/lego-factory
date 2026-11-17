@@ -1,0 +1,6 @@
+# Python packages for tools/build.py (word timings), scripts/council_pack.py and scripts/fetch_reference.py.
+# Install: zsh scripts/setup_mac.sh   (or: python3 -m venv .venv && .venv/bin/pip install -r requirements.txt)
+numpy>=2.0
+faster-whisper==1.2.1
+av>=14,<19          # PyAV 19 breaks faster-whisper 1.2.1 (metadata_errors TypeError)
+yt-dlp

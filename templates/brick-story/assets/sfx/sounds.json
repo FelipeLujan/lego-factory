@@ -1,0 +1,109 @@
+{
+ "_readme": "Curated, hiss-free sound library. 'peak' = seconds into the file where it hits (measured with npx hyperframes audio --json). 'lp' = low-pass in Hz applied when mixing. 'use' = when to use it. Only names listed here may appear in cues.json. Every sound is used at most ~6 times per video unless it is a melodic run.",
+ "whoosh": {
+  "peak": 0.162,
+  "lp": 7000,
+  "use": "section change (automatic rotation)"
+ },
+ "swoosh": {
+  "peak": 0.074,
+  "lp": 7000,
+  "use": "section change (automatic rotation); something sweeping past"
+ },
+ "swish": {
+  "peak": 0.055,
+  "lp": 8000,
+  "use": "section change (automatic rotation); a quick flip or reshape"
+ },
+ "whoosh-cinematic": {
+  "peak": 2.503,
+  "lp": 6000,
+  "use": "big camera move (cues.json big_moves only)"
+ },
+ "pop": {
+  "peak": 0.12,
+  "lp": 9000,
+  "use": "a label/tag appears; a small thing appears"
+ },
+ "woodblock": {
+  "peak": 0.003,
+  "lp": 6000,
+  "use": "counting, lists, ticks (use 'run' for a rising run of notes)"
+ },
+ "tom": {
+  "peak": 0.004,
+  "lp": 5000,
+  "use": "under a letter slam (automatic); a heavy landing"
+ },
+ "impact-bass-1": {
+  "peak": 0.073,
+  "lp": 4000,
+  "use": "under a letter slam (automatic); the payoff"
+ },
+ "impact-bass-2": {
+  "peak": 0.073,
+  "lp": 4000,
+  "use": "under a letter slam (automatic)"
+ },
+ "riser": {
+  "peak": 3.472,
+  "lp": 5000,
+  "use": "builds into the payoff (automatic, cues.json payoff)"
+ },
+ "slide-whistle": {
+  "peak": 1.223,
+  "lp": 5000,
+  "use": "something grows or climbs (semis -5 = falls/opens)"
+ },
+ "boing": {
+  "peak": 0.04,
+  "lp": 6000,
+  "use": "a shape snaps into place; something springy or funny"
+ },
+ "scratch": {
+  "peak": 0.75,
+  "lp": 6000,
+  "use": "'wait, no' / contradiction / 'disagreed' (max 2 per video)"
+ },
+ "rewind": {
+  "peak": 1.187,
+  "lp": 6000,
+  "use": "'replay', 'go back', 'rewind', history"
+ },
+ "computer": {
+  "peak": 0.942,
+  "lp": 6000,
+  "use": "computers, data, old tech (set max_len 2.5)"
+ },
+ "bell": {
+  "peak": 0.078,
+  "lp": 6000,
+  "use": "a reveal or 'aha' (set max_len 1.0-1.4)"
+ },
+ "buzzer": {
+  "peak": 0.047,
+  "lp": 5000,
+  "use": "failure, wrong, impossible (max_len 0.6, gain <= 0.15)"
+ },
+ "snap": {
+  "peak": 0.154,
+  "lp": 6000,
+  "use": "something brittle cracks or snaps (ice, a twig, a bond breaking)"
+ },
+ "inflate": {
+  "peak": 1.23,
+  "lp": 6000,
+  "use": "something inflates, swells or fills with air (lasts ~2 s; peak = fully inflated)"
+ },
+ "toggle": {
+  "peak": 0.014,
+  "lp": 6000,
+  "use": "a switch, lever or button is pressed (once; never per word)"
+ },
+ "squeak": {
+  "peak": 0.038,
+  "lp": 6000,
+  "use": "rubber stretching or squeaking; something elastic"
+ },
+ "_banned": "glitch-1, glitch-2, glitch-3, sparkle, key-press, click, click-soft: hiss / camera-shutter sounds. Never add them."
+}

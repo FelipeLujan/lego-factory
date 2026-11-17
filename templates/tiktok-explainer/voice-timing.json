@@ -1,0 +1,50 @@
+{
+ "voice": "en-US-Chirp3-HD-Sadachbia",
+ "rate": 1.1,
+ "total": 20.471,
+ "lines": [
+  {
+   "id": "hook",
+   "start": 0.05,
+   "end": 3.115,
+   "text": "Bees could build any shape. They always pick the hexagon."
+  },
+  {
+   "id": "tri",
+   "start": 3.215,
+   "end": 6.217,
+   "text": "Triangles fit together, but they waste wax on extra edges."
+  },
+  {
+   "id": "sq",
+   "start": 6.267,
+   "end": 8.244,
+   "text": "Squares tile too, but still use more wax."
+  },
+  {
+   "id": "one",
+   "start": 8.344,
+   "end": 11.921,
+   "text": "Number one: hexagons cover a flat surface with zero gaps."
+  },
+  {
+   "id": "two",
+   "start": 11.971,
+   "end": 15.485,
+   "text": "Number two: they hold the most honey for the least wax."
+  },
+  {
+   "id": "proof",
+   "start": 15.585,
+   "end": 18.842,
+   "text": "In 1999, mathematician Thomas Hales finally proved it."
+  },
+  {
+   "id": "end",
+   "start": 18.942,
+   "end": 20.471,
+   "text": "Bees solved it first."
+  }
+ ],
+ "script_hash": "246fbc1963af"
+}

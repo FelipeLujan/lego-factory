@@ -1,0 +1,30 @@
+{
+  "_readme": "Every 'at' is SPOKEN WORDS from script.json (case and punctuation ignored); the build turns them into seconds. Use {\"at\": \"one\", \"nth\": 2} for the 2nd time a phrase is said. See PLAYBOOK.md section 5.",
+
+  "hook": { "line1": "Any shape.", "line2": "Hexagons." },
+  "end":  { "line1": "Zero gaps.", "line2": "Least wax." },
+
+  "accent": ["shape", "hexagon", "triangles", "wax", "squares", "edges", "one", "gaps", "two", "honey", "1999", "proved", "first"],
+
+  "chapters": ["triangles", "squares", "number one", "number two", "in 1999", "bees solved"],
+
+  "big_moves": ["in 1999"],
+
+  "slams": [
+    { "at": "number one", "letter": "1", "word": "ZERO GAPS" },
+    { "at": "number two", "letter": "2", "word": "LEAST WAX" }
+  ],
+
+  "tags": [
+    { "at": "thomas hales", "text": "THOMAS HALES · 1999", "hold": 2.2 }
+  ],
+
+  "payoff": "proved",
+
+  "sfx": [
+    { "at": "waste", "sound": "buzzer", "gain": 0.12, "max_len": 0.5 },
+    { "at": "squares", "sound": "boing" },
+    { "at": "honey", "sound": "slide-whistle", "gain": 0.18 },
+    { "at": "bees solved", "sound": "bell", "max_len": 1.2, "semis": 5 }
+  ]
+}

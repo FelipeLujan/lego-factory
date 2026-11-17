@@ -1,0 +1,251 @@
+<template>
+  <!--
+    THE STAGE. DO NOT EDIT for a new video: put the video's visuals in assets/scene.js.
+    Provides: black unlit floor + light grid + wireframe dome ("black with a light mesh"), key + two rim lights,
+    the camera rig (steady on captions; a gentle whip + push-in only on chapters; slow drift),
+    world-anchored label tags, and the render loop (pure function of time).
+  -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #000;
+    }
+    #stage-canvas {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 1920px;
+    }
+    #stage-leads {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 1920px;
+      pointer-events: none;
+    }
+    .st-tag {
+      position: absolute;
+      left: 0;
+      top: 0;
+      padding: 9px 16px 8px;
+      border-radius: 4px;
+      background: var(--color-accent);
+      color: #000;
+      font-family: "IBM Plex Mono", monospace;
+      font-weight: 700;
+      font-size: 28px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      opacity: 0;
+    }
+    .st-tag.ink {
+      background: #fff;
+    }
+  </style>
+  <div id="root" data-composition-id="stage" data-width="1080" data-height="1920" data-layout-allow-overflow data-layout-allow-overlap>
+    <canvas id="stage-canvas" width="1080" height="1920"></canvas>
+    <svg id="stage-leads" viewBox="0 0 1080 1920" data-layout-ignore><g id="stage-lead-g" stroke="#FF6B4A" stroke-width="4" fill="#FF6B4A"></g></svg>
+    <div id="stage-tags"></div>
+  </div>
+  <script>
+    (function () {
+      const F = window.FILM;
+      const THREE = window.THREE;
+      const SCENE = window.SCENE;
+      const DEG = Math.PI / 180;
+      THREE.ColorManagement.legacyMode = false; // hex colours are sRGB; light in linear space
+
+      // ---------- renderer ----------
+      const canvas = document.getElementById("stage-canvas");
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true, powerPreference: "high-performance" });
+      renderer.setPixelRatio(SCENE.pixelRatio || 1.5); // render at 1.5x and downsample: crisp edges and fine detail
+      renderer.setSize(1080, 1920, false);
+      renderer.outputEncoding = THREE.sRGBEncoding;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.05;
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color("#000000");
+      scene.fog = new THREE.Fog(0x000000, 12, 40);
+      const camera = new THREE.PerspectiveCamera(32, 1080 / 1920, 0.1, 200);
+      camera.setViewOffset(1080, 1920, 0, 170, 1080, 1920); // subject sits above the caption band
+
+      // ---------- studio environment: what metal, rubber, paint and ice reflect (realism) ----------
+      // A dark room with softboxes, pre-filtered with PMREM. Only reflections use it; the background stays black.
+      // In scene.js use MeshPhysicalMaterial / MeshStandardMaterial with metalness/roughness/clearcoat to get real-looking surfaces.
+      (function studioEnv() {
+        const env = new THREE.Scene();
+        const room = new THREE.Mesh(new THREE.BoxGeometry(30, 16, 30), new THREE.MeshBasicMaterial({ color: 0x060606, side: THREE.BackSide }));
+        room.position.y = 6;
+        env.add(room);
+        const box = (w, h, k, col, x, y, z) => {
+          const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(col).multiplyScalar(k), side: THREE.DoubleSide }));
+          m.position.set(x, y, z);
+          m.lookAt(0, 1, 0);
+          env.add(m);
+        };
+        box(12, 4, 5, 0xffffff, 0, 13, 1);      // big overhead softbox
+        box(2.2, 11, 3.2, 0xdff4ff, -13, 5, 3); // cool strip, left
+        box(2.2, 11, 2.4, 0xffc8b6, 13, 5, -3); // warm strip, right
+        box(9, 3, 1.3, 0xffffff, 0, 3, 14);     // front fill
+        box(9, 2, 0.7, 0xffffff, 0, 2, -14);    // back
+        const pm = new THREE.PMREMGenerator(renderer);
+        scene.environment = pm.fromScene(env, 0.03).texture;
+        pm.dispose();
+      })();
+
+      // ---------- lights ----------
+      scene.add(new THREE.HemisphereLight(0xffffff, 0x000000, 0.4));
+      const key = new THREE.DirectionalLight(0xfff0e0, 2.5);
+      key.position.set(-5, 9, 6);
+      key.castShadow = true;
+      key.shadow.mapSize.set(2048, 2048);
+      Object.assign(key.shadow.camera, { left: -6, right: 6, top: 7, bottom: -5, near: 1, far: 30 });
+      key.shadow.radius = 6;
+      key.shadow.bias = -0.0008;
+      scene.add(key);
+      const rim = new THREE.DirectionalLight(0xdff4ff, 2.4);
+      rim.position.set(5, 5, -7);
+      scene.add(rim);
+      const rim2 = new THREE.DirectionalLight(0xff6b4a, 1.6);
+      rim2.position.set(-6, 2.5, -5);
+      scene.add(rim2);
+      const fill = new THREE.DirectionalLight(0xffd9c9, 0.3);
+      fill.position.set(6, 1.5, 4);
+      scene.add(fill);
+
+      // ---------- black set with a light mesh ----------
+      const floor = new THREE.Mesh(new THREE.PlaneGeometry(120, 120), new THREE.MeshBasicMaterial({ color: 0x000000 }));
+      floor.rotation.x = -Math.PI / 2;
+      scene.add(floor);
+      const shadowCatch = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.ShadowMaterial({ opacity: 0.6 }));
+      shadowCatch.rotation.x = -Math.PI / 2;
+      shadowCatch.position.y = 0.002;
+      shadowCatch.receiveShadow = true;
+      scene.add(shadowCatch);
+      const grid = new THREE.GridHelper(80, 120, 0xd9d9d9, 0xd9d9d9);
+      grid.material.transparent = true;
+      grid.material.opacity = 0.2;
+      grid.material.depthWrite = false;
+      grid.position.y = 0.004;
+      scene.add(grid);
+      const dome = new THREE.LineSegments(
+        new THREE.WireframeGeometry(new THREE.IcosahedronGeometry(46, 5)),
+        new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.17, fog: false, depthWrite: false })
+      );
+      dome.position.y = 2;
+      scene.add(dome);
+
+      // ---------- world-anchored label tags (declared in SCENE.labels) ----------
+      const leadG = document.getElementById("stage-lead-g");
+      const tagHost = document.getElementById("stage-tags");
+      const tags = {};
+      (SCENE.labels || []).forEach((L) => {
+        const el = document.createElement("div");
+        el.className = "st-tag" + (L.style === "ink" ? " ink" : "");
+        el.id = "stage-tag-" + L.id;
+        el.textContent = L.text;
+        tagHost.appendChild(el);
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        dot.setAttribute("r", "8"); dot.setAttribute("stroke", "#FFFFFF"); dot.setAttribute("stroke-width", "3");
+        leadG.appendChild(line); leadG.appendChild(dot);
+        tags[L.id] = { el, line, dot, dx: L.dx ?? 140, dy: L.dy ?? -120, w: 0, h: 0 };
+      });
+      const v3 = new THREE.Vector3();
+      function project(p) {
+        v3.copy(p).project(camera);
+        return { x: (v3.x * 0.5 + 0.5) * 1080, y: (-v3.y * 0.5 + 0.5) * 1920 };
+      }
+      // ctx.tag(id, worldPosition, amount 0..1): call from SCENE.update every frame for each label
+      const shown = new Set();
+      function tag(id, pos, amt) {
+        const T = tags[id];
+        if (!T) return;
+        shown.add(id);
+        if (!T.w) { T.w = T.el.offsetWidth; T.h = T.el.offsetHeight; }
+        T._amt = amt || 0;
+        T._pos = !pos ? null : pos.clone ? pos.clone() : new THREE.Vector3(pos[0], pos[1], pos[2]);
+      }
+      function drawTags() {
+        for (const id in tags) {
+          const T = tags[id];
+          if (!shown.has(id) || !T._pos || !(T._amt > 0.001)) {
+            T.el.style.opacity = "0"; T.line.setAttribute("opacity", "0"); T.dot.setAttribute("opacity", "0");
+            continue;
+          }
+          const a = project(T._pos);
+          let cx = Math.max(130 + T.w / 2, Math.min(930 - T.w / 2, a.x + T.dx));
+          let cy = Math.max(300 + T.h / 2, Math.min(1290 - T.h / 2, a.y + T.dy));
+          const k = F.E.back(Math.min(1, T._amt));
+          const op = String(Math.min(1, T._amt * 1.4));
+          T.el.style.opacity = op;
+          T.el.style.transform = `translate(${(cx - T.w / 2).toFixed(1)}px, ${(cy - T.h / 2).toFixed(1)}px) scale(${(0.85 + 0.15 * k).toFixed(3)})`;
+          T.line.setAttribute("x1", a.x.toFixed(1)); T.line.setAttribute("y1", a.y.toFixed(1));
+          T.line.setAttribute("x2", cx.toFixed(1)); T.line.setAttribute("y2", cy.toFixed(1));
+          T.dot.setAttribute("cx", a.x.toFixed(1)); T.dot.setAttribute("cy", a.y.toFixed(1));
+          T.line.setAttribute("opacity", op); T.dot.setAttribute("opacity", op);
+        }
+      }
+
+      // ---------- scene ----------
+      const ctx = { THREE, scene, camera, renderer, F, DEG, tag };
+      SCENE.build(ctx);
+
+      // ---------- camera rig: SCENE.update returns { target:[x,y,z], dist, az, el } ----------
+      const C = F.cues;
+      function whip(t) {
+        let off = 0;
+        C.chapters.forEach((c, i) => {
+          const x = t - c;
+          if (x >= 0 && x < 0.55) off += (i % 2 ? -1 : 1) * 12 * Math.exp(-x / 0.11); // chapter whip (person: keep it gentle)
+        });
+        return off;
+      }
+      let lastT = -1;
+      function render(t) {
+        if (t === lastT) return;
+        lastT = t;
+        shown.clear();
+        const cam = Object.assign({ target: [0, 1.2, 0], dist: 8.5, az: 0, el: 10 }, SCENE.update(t, ctx) || {});
+        // NO camera motion on captions or accent words: the person found any per-caption punch/roll "too much shaking".
+        // Only chapters get a gentle push-in (6%) + a 12-degree whip.
+        const pCh = F.kick(t, C.chapters, 0.5);
+        const d = cam.dist * (1 - 0.06 * pCh);
+        const az = (cam.az + whip(t) + 5 * Math.sin(t * 0.7)) * DEG;
+        const el = (cam.el + 2.5 * Math.sin(t * 0.53 + 1.1)) * DEG;
+        const tg = new THREE.Vector3(cam.target[0], cam.target[1], cam.target[2]);
+        camera.position.set(tg.x + d * Math.cos(el) * Math.sin(az), tg.y + d * Math.sin(el), tg.z + d * Math.cos(el) * Math.cos(az));
+        camera.lookAt(tg);
+        camera.updateMatrixWorld(true);
+        dome.rotation.y = t * 0.035;
+        dome.rotation.x = 0.08 * Math.sin(t * 0.21);
+        renderer.render(scene, camera);
+        drawTags();
+      }
+
+      // ---------- clock ----------
+      window.addEventListener("hf-seek", (e) => render(e.detail.time));
+      const tl = gsap.timeline({ paused: true });
+      const st = { p: 0 };
+      tl.to(st, { p: 1, duration: F.total, ease: "none", onUpdate: () => render(tl.time()) }, 0);
+      window.__hf = window.__hf || {};
+      window.__hf.buildReady = window.__hf.buildReady || {};
+      window.__hf.buildReady.stage = Promise.resolve().then(() => {
+        renderer.compile(scene, camera);
+        render(0);
+        const px = new Uint8Array(4);
+        const gl = renderer.getContext();
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
+      });
+      window.__timelines["stage"] = tl;
+    })();
+  </script>
+</template>

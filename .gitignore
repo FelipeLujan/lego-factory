@@ -1,0 +1,36 @@
+# Whitelist repo: only the workspace "brain" (docs, agents, skills, templates, scripts) is tracked.
+# Video projects, renders, references, voices and caches stay local on each machine.
+/*
+!/.gitignore
+!/AGENTS.md
+!/CLAUDE.md
+!/PLAYBOOK.md
+!/README.md
+!/requirements.txt
+!/skills-lock.json
+!/docs/
+!/scripts/
+!/templates/
+!/.agents/
+!/.claude/
+!/reference/
+
+# reference/: only the LEGO style images the council seats compare against + the cartoon-style analysis
+/reference/*
+!/reference/user-attachments/
+!/reference/crayon/
+/reference/crayon/*
+!/reference/crayon/ANALYSIS.md
+
+# machine-local files inside tracked folders
+/scripts/finished_council_conversations.txt
+**/.hyperframes/
+**/renders/
+**/council/
+**/node_modules/
+**/__pycache__/
+**/_pre-cinematic/
+**/.DS_Store
+templates/*/assets/sfx/sfx-bed.wav
+*.pyc
+**/.media/

@@ -1,0 +1,367 @@
+<template>
+  <!--
+    THE CINEMATIC STAGE (brick-cinematic template). DO NOT EDIT for a new video: put the visuals in assets/scene.js.
+    The look of brick video games / brick movies comes from: full environments (sky, fog, sun), warm-vs-cool light,
+    bloom on every light source, shallow depth of field (the "miniature" toy look), ACES tone mapping and a colour grade.
+    This stage provides all of that. SCENE.update(t, ctx) returns the camera AND an optional `look` for the shot:
+
+      return {
+        target: [x, y, z], dist: 9, az: 0, el: 10,     // orbit camera (same as the classic stage)
+        pos: [x, y, z],                                 // OR an absolute camera position (then az/el/dist are ignored)
+        fov: 32, roll: 0, near: 0.1, far: 400, drift: 1, // lens; drift 0 = no slow sway
+        look: {
+          env: "studio",            // reflection map made with ctx.makeEnv(name, fn) in build(); "studio" exists
+          bg: "#000000",            // background colour (a sky dome from fx-kit draws over it)
+          fog: ["#9fb7d0", 20, 160],// [colour, near, far]; null = no fog
+          sun: { color: "#ffe2b8", intensity: 3, dir: [-0.5, 0.6, 0.4], shadow: 10, center: [x,y,z] },
+          hemi: { sky: "#bcd4ff", ground: "#3a3020", intensity: 0.6 },
+          rim: { color: "#9cc8ff", intensity: 1.2 }, // cool back light
+          exposure: 1.0, bloom: 0.6, threshold: 1.0,
+          dof: 0.6, focus: 9,       // dof 0..1.5 strength; focus = distance in metres (default: dist)
+          grade: { sat: 1.12, contrast: 1.08, lift: [0,0,0.02], gain: [1.03,1,0.97] },
+          vignette: 0.35, mesh: false,  // mesh true = the house grid floor + wireframe dome
+        }
+      };
+
+    Objects that must NOT be in the depth pass (additive flames, smoke sprites, glows): obj.layers.set(2) (fx-kit does this).
+  -->
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #000; }
+    #stage-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    #stage-leads { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; pointer-events: none; }
+    .st-tag { position: absolute; left: 0; top: 0; padding: 9px 16px 8px; border-radius: 4px; background: var(--color-accent); color: #000;
+      font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 42px; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; opacity: 0; }
+    .st-tag.ink { background: #fff; }
+    /* CALLOUTS (SCENE.callouts): the annotation layer. Something new lands about every second, inside the shot. */
+    .co { position: absolute; left: 0; top: 0; opacity: 0; font-family: "Archivo Black", sans-serif; text-transform: uppercase; white-space: nowrap; transform-origin: 50% 50%; }
+    .co-t { display: inline-block; padding: 10px 20px 7px; font-size: 54px; line-height: 1; letter-spacing: 0.02em; }
+    .co-s { display: block; width: max-content; margin-top: 5px; padding: 5px 12px 4px; font-size: 32px; line-height: 1; background: #111; color: #fff; }
+    .co-chip .co-t { background: #fff; color: #111; border: 4px solid #111; border-radius: 6px; box-shadow: 0 5px 0 rgba(0,0,0,0.55); }
+    .co-ok .co-t { background: #2fae4f; color: #fff; border: 4px solid #0d3d1a; border-radius: 6px; box-shadow: 0 5px 0 rgba(0,0,0,0.5); }
+    .co-warn .co-t { background: #e8382b; color: #fff; border: 4px solid #4a0b06; border-radius: 6px; box-shadow: 0 5px 0 rgba(0,0,0,0.5); }
+    .co-stamp .co-t { color: #e8382b; border: 7px solid #e8382b; border-radius: 10px; font-size: 84px; padding: 8px 22px 4px; background: rgba(255,255,255,0.12); text-shadow: 0 3px 0 rgba(0,0,0,0.35); }
+    .co-big .co-t { background: #fff; color: #111; border: 6px solid #111; border-radius: 10px; font-size: 104px; box-shadow: 0 6px 0 rgba(0,0,0,0.55); }
+    .co-strike { position: absolute; left: -4%; top: 46%; height: 9px; width: 0; background: #e8382b; border-radius: 4px; transform: rotate(-4deg); box-shadow: 0 2px 0 rgba(0,0,0,0.4); }
+  </style>
+  <div id="root" data-composition-id="stage" data-width="1080" data-height="1920" data-layout-allow-overflow data-layout-allow-overlap>
+    <canvas id="stage-canvas" width="1080" height="1920"></canvas>
+    <svg id="stage-leads" viewBox="0 0 1080 1920" data-layout-ignore><g id="stage-lead-g" stroke="#FF6B4A" stroke-width="4" fill="#FF6B4A"></g></svg>
+    <div id="stage-tags"></div>
+  </div>
+  <script>
+    (function () {
+      const F = window.FILM;
+      const THREE = window.THREE;
+      const SCENE = window.SCENE;
+      const DEG = Math.PI / 180;
+      THREE.ColorManagement.legacyMode = false;
+
+      // ---------- renderer ----------
+      const PR = (window.RENDER_PROFILE && window.RENDER_PROFILE.pixelRatio) || SCENE.pixelRatio || 1.5; // assets/render-profile.js: council drafts render at 1.0
+      const canvas = document.getElementById("stage-canvas");
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, preserveDrawingBuffer: true, powerPreference: "high-performance" });
+      renderer.setPixelRatio(PR);
+      renderer.setSize(1080, 1920, false);
+      renderer.outputEncoding = THREE.LinearEncoding; // the composite pass encodes to sRGB itself
+      renderer.toneMapping = THREE.NoToneMapping;     // render targets stay linear HDR; ACES happens in the composite
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.autoClear = true;
+      const W = Math.round(1080 * PR), H = Math.round(1920 * PR);
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color("#000000");
+      scene.fog = new THREE.Fog(0x000000, 12, 40);
+      const camera = new THREE.PerspectiveCamera(32, 1080 / 1920, 0.1, 400);
+      camera.setViewOffset(1080, 1920, 0, 170, 1080, 1920); // subject sits above the caption band
+      camera.layers.enable(2);
+
+      // ---------- reflection environments ----------
+      const pm = new THREE.PMREMGenerator(renderer);
+      const envs = {};
+      function makeEnv(name, fill) { // fill(envScene, THREE): add big unlit shapes (sky, softboxes, sun disc). Called once in build().
+        const env = new THREE.Scene();
+        fill(env, THREE);
+        envs[name] = pm.fromScene(env, 0.02).texture;
+        return envs[name];
+      }
+      makeEnv("studio", (env) => {
+        const room = new THREE.Mesh(new THREE.BoxGeometry(30, 16, 30), new THREE.MeshBasicMaterial({ color: 0x060606, side: THREE.BackSide }));
+        room.position.y = 6; env.add(room);
+        const box = (w, h, k, col, x, y, z) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(col).multiplyScalar(k), side: THREE.DoubleSide })); m.position.set(x, y, z); m.lookAt(0, 1, 0); env.add(m); };
+        box(12, 4, 5, 0xffffff, 0, 13, 1); box(2.2, 11, 3.2, 0xdff4ff, -13, 5, 3); box(2.2, 11, 2.4, 0xffc8b6, 13, 5, -3); box(9, 3, 1.3, 0xffffff, 0, 3, 14); box(9, 2, 0.7, 0xffffff, 0, 2, -14);
+      });
+      scene.environment = envs.studio;
+
+      // ---------- lights (the look of each shot sets them) ----------
+      const hemi = new THREE.HemisphereLight(0xffffff, 0x000000, 0.4); scene.add(hemi);
+      const sun = new THREE.DirectionalLight(0xfff0e0, 2.5);
+      sun.castShadow = true; sun.shadow.mapSize.set(4096, 4096); sun.shadow.radius = 4; sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02;
+      scene.add(sun); scene.add(sun.target);
+      const rim = new THREE.DirectionalLight(0xdff4ff, 1.2); scene.add(rim); scene.add(rim.target);
+      const fill = new THREE.DirectionalLight(0xffd9c9, 0.25); scene.add(fill); scene.add(fill.target);
+
+      // ---------- optional house mesh (grid + dome) ----------
+      const meshG = new THREE.Group(); scene.add(meshG);
+      const grid = new THREE.GridHelper(80, 120, 0xd9d9d9, 0xd9d9d9);
+      grid.material.transparent = true; grid.material.opacity = 0.2; grid.material.depthWrite = false; grid.position.y = 0.004; meshG.add(grid);
+      const dome = new THREE.LineSegments(new THREE.WireframeGeometry(new THREE.IcosahedronGeometry(46, 5)), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.17, fog: false, depthWrite: false }));
+      dome.position.y = 2; meshG.add(dome);
+
+      // ---------- post-processing: HDR scene -> depth -> bloom mips -> composite (DOF, ACES, grade, vignette) ----------
+      const rtScene = new THREE.WebGLRenderTarget(W, H, { type: THREE.HalfFloatType, samples: 4 });
+      const rtDepth = new THREE.WebGLRenderTarget(W >> 1, H >> 1, { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter });
+      const depthMat = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
+      const LV = 6, mips = [], tmps = [];
+      for (let i = 0; i < LV; i++) {
+        const w = Math.max(4, W >> (i + 1)), h = Math.max(4, H >> (i + 1));
+        mips.push(new THREE.WebGLRenderTarget(w, h, { type: THREE.HalfFloatType }));
+        tmps.push(new THREE.WebGLRenderTarget(w, h, { type: THREE.HalfFloatType }));
+      }
+      const quadCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+      const quadScene = new THREE.Scene();
+      const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2)); quad.frustumCulled = false; quadScene.add(quad);
+      const VS = "varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }";
+      const brightMat = new THREE.ShaderMaterial({
+        uniforms: { tSrc: { value: null }, uTh: { value: 1 }, uTexel: { value: new THREE.Vector2() } }, vertexShader: VS, depthTest: false, depthWrite: false,
+        fragmentShader: `uniform sampler2D tSrc; uniform float uTh; uniform vec2 uTexel; varying vec2 vUv;
+          void main(){ vec3 c = vec3(0.0);
+            c += texture2D(tSrc, vUv + uTexel*vec2(-1.0,-1.0)).rgb; c += texture2D(tSrc, vUv + uTexel*vec2(1.0,-1.0)).rgb;
+            c += texture2D(tSrc, vUv + uTexel*vec2(-1.0, 1.0)).rgb; c += texture2D(tSrc, vUv + uTexel*vec2(1.0, 1.0)).rgb; c *= 0.25;
+            float l = max(c.r, max(c.g, c.b)); float k = smoothstep(uTh, uTh * 1.6 + 0.2, l);
+            gl_FragColor = vec4(min(c * k, vec3(40.0)), 1.0); }` });
+      const downMat = new THREE.ShaderMaterial({
+        uniforms: { tSrc: { value: null }, uTexel: { value: new THREE.Vector2() } }, vertexShader: VS, depthTest: false, depthWrite: false,
+        fragmentShader: `uniform sampler2D tSrc; uniform vec2 uTexel; varying vec2 vUv;
+          void main(){ vec3 c = texture2D(tSrc, vUv + uTexel*vec2(-1.0,-1.0)).rgb + texture2D(tSrc, vUv + uTexel*vec2(1.0,-1.0)).rgb
+            + texture2D(tSrc, vUv + uTexel*vec2(-1.0,1.0)).rgb + texture2D(tSrc, vUv + uTexel*vec2(1.0,1.0)).rgb; gl_FragColor = vec4(c*0.25, 1.0); }` });
+      const blurMat = new THREE.ShaderMaterial({
+        uniforms: { tSrc: { value: null }, uDir: { value: new THREE.Vector2() } }, vertexShader: VS, depthTest: false, depthWrite: false,
+        fragmentShader: `uniform sampler2D tSrc; uniform vec2 uDir; varying vec2 vUv;
+          void main(){ vec3 c = texture2D(tSrc, vUv).rgb * 0.2270;
+            c += (texture2D(tSrc, vUv + uDir*1.3846).rgb + texture2D(tSrc, vUv - uDir*1.3846).rgb) * 0.3162;
+            c += (texture2D(tSrc, vUv + uDir*3.2308).rgb + texture2D(tSrc, vUv - uDir*3.2308).rgb) * 0.0703;
+            gl_FragColor = vec4(c, 1.0); }` });
+      const compMat = new THREE.ShaderMaterial({
+        uniforms: {
+          tScene: { value: rtScene.texture }, tDepth: { value: rtDepth.texture },
+          tB0: { value: mips[0].texture }, tB1: { value: mips[1].texture }, tB2: { value: mips[2].texture }, tB3: { value: mips[3].texture }, tB4: { value: mips[4].texture }, tB5: { value: mips[5].texture },
+          uBloom: { value: 0.6 }, uExposure: { value: 1 }, uSat: { value: 1.1 }, uContrast: { value: 1.06 }, uLift: { value: new THREE.Vector3() }, uGain: { value: new THREE.Vector3(1, 1, 1) },
+          uVig: { value: 0.35 }, uDof: { value: 0 }, uFocus: { value: 9 }, uNear: { value: 0.1 }, uFar: { value: 400 }, uRes: { value: new THREE.Vector2(W, H) },
+        },
+        vertexShader: VS, depthTest: false, depthWrite: false,
+        fragmentShader: `
+          #include <packing>
+          uniform sampler2D tScene, tDepth, tB0, tB1, tB2, tB3, tB4, tB5;
+          uniform float uBloom, uExposure, uSat, uContrast, uVig, uDof, uFocus, uNear, uFar; uniform vec3 uLift, uGain; uniform vec2 uRes;
+          varying vec2 vUv;
+          float viewZ(vec2 uv){ float d = unpackRGBAToDepth(texture2D(tDepth, uv)); return -perspectiveDepthToViewZ(d, uNear, uFar); }
+          float coc(float z){ float a = abs(z - uFocus) / max(uFocus, 0.001); return clamp(a * 1.6, 0.0, 1.0); }
+          vec3 aces(vec3 c){ // ACES fitted (Stephen Hill), same as three.js
+            const mat3 I = mat3(0.59719,0.07600,0.02840, 0.35458,0.90834,0.13383, 0.04823,0.01566,0.83777);
+            const mat3 O = mat3(1.60475,-0.10208,-0.00327, -0.53108,1.10813,-0.07276, -0.07367,-0.00605,1.07602);
+            c = I * c; vec3 a = c * (c + 0.0245786) - 0.000090537; vec3 b = c * (0.983729 * c + 0.4329510) + 0.238081; return clamp(O * (a / b), 0.0, 1.0); }
+          vec3 toSRGB(vec3 c){ return mix(c * 12.92, 1.055 * pow(c, vec3(1.0/2.4)) - 0.055, step(0.0031308, c)); }
+          void main(){
+            vec3 col = texture2D(tScene, vUv).rgb;
+            if (uDof > 0.001) {
+              float z = viewZ(vUv); float r = coc(z) * uDof;
+              if (r > 0.02) {
+                vec2 px = 1.0 / uRes; float R = r * 14.0; vec3 acc = col; float wsum = 1.0;
+                for (int i = 0; i < 24; i++) {
+                  float fi = float(i); float ang = fi * 2.39996; float rr = sqrt((fi + 0.5) / 24.0) * R;
+                  vec2 o = vec2(cos(ang), sin(ang)) * rr * px * 1.5;
+                  float zs = viewZ(vUv + o); float w = (zs < z - 0.5) ? coc(zs) : 1.0; // sharp foreground doesn't bleed into blurred background
+                  acc += texture2D(tScene, vUv + o).rgb * w; wsum += w; }
+                col = acc / wsum;
+              }
+            }
+            vec3 bl = texture2D(tB0, vUv).rgb * 0.30 + texture2D(tB1, vUv).rgb * 0.26 + texture2D(tB2, vUv).rgb * 0.20
+                    + texture2D(tB3, vUv).rgb * 0.13 + texture2D(tB4, vUv).rgb * 0.08 + texture2D(tB5, vUv).rgb * 0.05;
+            col += bl * uBloom;
+            col = aces(col * uExposure);
+            col = toSRGB(col);
+            col = (col - 0.5) * uContrast + 0.5;
+            float l = dot(col, vec3(0.2126, 0.7152, 0.0722)); col = mix(vec3(l), col, uSat);
+            col = col * uGain + uLift * (1.0 - col);
+            vec2 q = vUv - 0.5; q.x *= 0.62; float v = smoothstep(0.85, 0.18, length(q) * 1.25); col *= mix(1.0, v, uVig);
+            float n = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453); col += (n - 0.5) / 255.0; // dither: no banding in skies
+            gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
+          }` });
+      function pass(mat, target) { quad.material = mat; renderer.setRenderTarget(target); renderer.render(quadScene, quadCam); }
+
+      // ---------- world-anchored label tags (declared in SCENE.labels) ----------
+      const leadG = document.getElementById("stage-lead-g");
+      const tagHost = document.getElementById("stage-tags");
+      const tags = {};
+      (SCENE.labels || []).forEach((L) => {
+        const el = document.createElement("div");
+        el.className = "st-tag" + (L.style === "ink" ? " ink" : "");
+        el.id = "stage-tag-" + L.id; el.textContent = L.text; tagHost.appendChild(el);
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        dot.setAttribute("r", "8"); dot.setAttribute("stroke", "#FFFFFF"); dot.setAttribute("stroke-width", "3");
+        leadG.appendChild(line); leadG.appendChild(dot);
+        tags[L.id] = { el, line, dot, dx: L.dx ?? 140, dy: L.dy ?? -120, w: 0, h: 0 };
+      });
+      const v3 = new THREE.Vector3();
+      function project(p) { v3.copy(p).project(camera); return { x: (v3.x * 0.5 + 0.5) * 1080, y: (-v3.y * 0.5 + 0.5) * 1920 }; }
+      const shown = new Set();
+      function tag(id, pos, amt) {
+        const T = tags[id]; if (!T) return; shown.add(id);
+        if (!T.w) { T.w = T.el.offsetWidth; T.h = T.el.offsetHeight; }
+        T._amt = amt || 0; T._pos = !pos ? null : pos.clone ? pos.clone() : new THREE.Vector3(pos[0], pos[1], pos[2]);
+      }
+      function drawTags() {
+        for (const id in tags) {
+          const T = tags[id];
+          if (!shown.has(id) || !T._pos || !(T._amt > 0.001)) { T.el.style.opacity = "0"; T.line.setAttribute("opacity", "0"); T.dot.setAttribute("opacity", "0"); continue; }
+          const a = project(T._pos);
+          const cx = Math.max(130 + T.w / 2, Math.min(930 - T.w / 2, a.x + T.dx));
+          const cy = Math.max(300 + T.h / 2, Math.min(1290 - T.h / 2, a.y + T.dy));
+          const k = F.E.back(Math.min(1, T._amt)); const op = String(Math.min(1, T._amt * 1.4));
+          T.el.style.opacity = op;
+          T.el.style.transform = `translate(${(cx - T.w / 2).toFixed(1)}px, ${(cy - T.h / 2).toFixed(1)}px) scale(${(0.85 + 0.15 * k).toFixed(3)})`;
+          T.line.setAttribute("x1", a.x.toFixed(1)); T.line.setAttribute("y1", a.y.toFixed(1)); T.line.setAttribute("x2", cx.toFixed(1)); T.line.setAttribute("y2", cy.toFixed(1));
+          T.dot.setAttribute("cx", a.x.toFixed(1)); T.dot.setAttribute("cy", a.y.toFixed(1)); T.line.setAttribute("opacity", op); T.dot.setAttribute("opacity", op);
+        }
+      }
+
+      // ---------- callouts: SCENE.callouts = [{ at: "spoken words" | seconds, nth, offset, until: words | seconds, hold,
+      //   text, sub, kind: chip|ok|warn|stamp|big, pos: (t) => [x,y,z] world anchor (leader line) OR screen: [x,y] px, dx, dy, strikeAt: words|seconds }]
+      const coHost = document.getElementById("stage-tags");
+      const CO = (SCENE.callouts || []).map((c) => {
+        const el = document.createElement("div"); el.className = "co co-" + (c.kind || "chip");
+        el.innerHTML = '<div class="co-t">' + c.text + '</div>' + (c.sub ? '<div class="co-s">' + c.sub + '</div>' : "") + (c.strikeAt != null ? '<div class="co-strike"></div>' : "");
+        coHost.appendChild(el);
+        let line = null, dot = null;
+        if (c.pos) { line = document.createElementNS("http://www.w3.org/2000/svg", "line"); dot = document.createElementNS("http://www.w3.org/2000/svg", "circle"); dot.setAttribute("r", "7"); dot.setAttribute("stroke", "#111"); dot.setAttribute("stroke-width", "3"); line.setAttribute("stroke", "#111"); line.setAttribute("stroke-width", "5"); dot.setAttribute("fill", "#fff"); leadG.appendChild(line); leadG.appendChild(dot); }
+        return { c, el, line, dot, strike: el.querySelector(".co-strike"), w: 0, h: 0, t0: null, t1: null, ts: null };
+      });
+      const tAt = (v, nth, off) => (typeof v === "number" ? v : (F.at(v, nth || 1) ?? 1e9)) + (off || 0);
+      function drawCallouts(t) {
+        for (const o of CO) {
+          const c = o.c;
+          if (o.t0 == null) { o.t0 = tAt(c.at, c.nth, c.offset); o.t1 = c.until != null ? tAt(c.until, c.untilNth, c.untilOffset) : o.t0 + (c.hold || 2.2); o.ts = c.strikeAt != null ? tAt(c.strikeAt, c.strikeNth, c.strikeOffset) : null; }
+          const amt = F.win(t, o.t0, o.t1, 0.06, 0.1);
+          if (amt <= 0.001) { o.el.style.opacity = "0"; if (o.line) { o.line.setAttribute("opacity", "0"); o.dot.setAttribute("opacity", "0"); } continue; }
+          if (!o.w) { o.w = o.el.offsetWidth; o.h = o.el.offsetHeight; }
+          let ax = null, ay = null, cx, cy;
+          if (c.pos) { const p = c.pos(t); if (!p) { o.el.style.opacity = "0"; continue; } const a = project(new THREE.Vector3(p[0], p[1], p[2])); ax = a.x; ay = a.y; cx = a.x + (c.dx ?? 150); cy = a.y + (c.dy ?? -140); }
+          else { cx = c.screen ? c.screen[0] : 540; cy = c.screen ? c.screen[1] : 360; }
+          cx = Math.max(70 + o.w / 2, Math.min(1010 - o.w / 2, cx)); cy = Math.max(250 + o.h / 2, Math.min(1360 - o.h / 2, cy));
+          const k = Math.min(1, (t - o.t0) / 0.22), pop = c.kind === "stamp" ? 1 + 0.6 * Math.pow(1 - Math.min(1, k), 3) : 0.55 + 0.45 * F.E.back(Math.min(1, k));
+          const rot = c.kind === "stamp" ? -8 : 0;
+          o.el.style.opacity = String(Math.min(1, amt * 1.3));
+          o.el.style.transform = `translate(${(cx - o.w / 2).toFixed(1)}px, ${(cy - o.h / 2).toFixed(1)}px) rotate(${rot}deg) scale(${pop.toFixed(3)})`;
+          if (o.strike) o.strike.style.width = (o.ts != null && t > o.ts ? Math.min(108, (t - o.ts) / 0.25 * 108) : 0) + "%";
+          if (o.line) { const op = String(Math.min(1, amt * 1.3)); o.line.setAttribute("x1", ax.toFixed(1)); o.line.setAttribute("y1", ay.toFixed(1)); o.line.setAttribute("x2", cx.toFixed(1)); o.line.setAttribute("y2", cy.toFixed(1)); o.dot.setAttribute("cx", ax.toFixed(1)); o.dot.setAttribute("cy", ay.toFixed(1)); o.line.setAttribute("opacity", op); o.dot.setAttribute("opacity", op); }
+        }
+      }
+
+      // ---------- scene ----------
+      const lights = { hemi, sun, rim, fill };
+      const ctx = { THREE, scene, camera, renderer, F, DEG, tag, makeEnv, envs, lights, cinematic: true };
+      SCENE.build(ctx);
+
+      // ---------- per-shot look ----------
+      const DEF = { env: "studio", bg: "#000000", fog: ["#000000", 12, 40], exposure: 1.0, bloom: 0.55, threshold: 1.1, dof: 0, vignette: 0.35, mesh: false,
+        sun: { color: "#fff0e0", intensity: 2.6, dir: [-0.5, 0.75, 0.5], shadow: 8 }, hemi: { sky: "#ffffff", ground: "#202020", intensity: 0.45 },
+        rim: { color: "#dff4ff", intensity: 1.4, dir: [0.5, 0.4, -0.7] }, fillL: { color: "#ffd9c9", intensity: 0.25 },
+        grade: { sat: 1.1, contrast: 1.06, lift: [0, 0, 0], gain: [1, 1, 1] } };
+      const bgCol = new THREE.Color();
+      function applyLook(L, tg, camPos) {
+        const g = Object.assign({}, DEF.grade, L.grade || {});
+        scene.environment = envs[L.env || DEF.env] || envs.studio;
+        bgCol.set(L.bg || DEF.bg); scene.background = bgCol;
+        const fg = L.fog === undefined ? DEF.fog : L.fog;
+        if (fg) { scene.fog.color.set(fg[0]); scene.fog.near = fg[1]; scene.fog.far = fg[2]; } else { scene.fog.near = 1e6; scene.fog.far = 1e7; }
+        const S = Object.assign({}, DEF.sun, L.sun || {});
+        const c = new THREE.Vector3().fromArray(S.center || tg);
+        const d = new THREE.Vector3().fromArray(S.dir).normalize();
+        sun.color.set(S.color); sun.intensity = S.intensity;
+        sun.position.copy(c).addScaledVector(d, 60); sun.target.position.copy(c); sun.target.updateMatrixWorld();
+        const sh = S.shadow || 8; Object.assign(sun.shadow.camera, { left: -sh, right: sh, top: sh, bottom: -sh, near: 1, far: 140 }); sun.shadow.camera.updateProjectionMatrix();
+        const Hh = Object.assign({}, DEF.hemi, L.hemi || {}); hemi.color.set(Hh.sky); hemi.groundColor.set(Hh.ground); hemi.intensity = Hh.intensity;
+        const R = Object.assign({}, DEF.rim, L.rim || {}); rim.color.set(R.color); rim.intensity = R.intensity;
+        rim.position.copy(c).addScaledVector(new THREE.Vector3().fromArray(R.dir || DEF.rim.dir).normalize(), 50); rim.target.position.copy(c); rim.target.updateMatrixWorld();
+        const Fl = Object.assign({}, DEF.fillL, L.fill || {}); fill.color.set(Fl.color); fill.intensity = Fl.intensity;
+        fill.position.copy(camPos); fill.target.position.copy(c); fill.target.updateMatrixWorld();
+        meshG.visible = !!L.mesh;
+        const U = compMat.uniforms;
+        U.uExposure.value = L.exposure ?? DEF.exposure; U.uBloom.value = L.bloom ?? DEF.bloom; brightMat.uniforms.uTh.value = L.threshold ?? DEF.threshold;
+        U.uSat.value = g.sat; U.uContrast.value = g.contrast; U.uLift.value.fromArray(g.lift); U.uGain.value.fromArray(g.gain);
+        U.uVig.value = L.vignette ?? DEF.vignette; U.uDof.value = L.dof ?? DEF.dof;
+      }
+
+      // ---------- camera rig ----------
+      const C = F.cues;
+      function whip(t) {
+        let off = 0;
+        C.chapters.forEach((c, i) => { const x = t - c; if (x >= 0 && x < 0.55) off += (i % 2 ? -1 : 1) * 12 * Math.exp(-x / 0.11); });
+        return off;
+      }
+      let lastT = -1;
+      function render(t) {
+        if (t === lastT) return;
+        lastT = t; shown.clear();
+        const cam = Object.assign({ target: [0, 1.2, 0], dist: 8.5, az: 0, el: 10, fov: 32, roll: 0, near: 0.1, far: 400, drift: 1 }, SCENE.update(t, ctx) || {});
+        const pCh = F.kick(t, C.chapters, 0.5);
+        const tg = new THREE.Vector3(cam.target[0], cam.target[1], cam.target[2]);
+        if (cam.pos) {
+          const p = new THREE.Vector3().fromArray(cam.pos); p.lerp(tg, 0.06 * pCh); // chapter push-in
+          camera.position.copy(p); camera.up.set(0, 1, 0); camera.lookAt(tg);
+          camera.rotateY(whip(t) * DEG * 0.35 + cam.drift * 0.6 * DEG * Math.sin(t * 0.7));
+        } else {
+          const d = cam.dist * (1 - 0.06 * pCh);
+          const az = (cam.az + whip(t) + cam.drift * 5 * Math.sin(t * 0.7)) * DEG;
+          const el = (cam.el + cam.drift * 2.5 * Math.sin(t * 0.53 + 1.1)) * DEG;
+          camera.position.set(tg.x + d * Math.cos(el) * Math.sin(az), tg.y + d * Math.sin(el), tg.z + d * Math.cos(el) * Math.cos(az));
+          camera.up.set(0, 1, 0); camera.lookAt(tg);
+        }
+        if (cam.roll) camera.rotateZ(cam.roll * DEG);
+        if (camera.fov !== cam.fov || camera.near !== cam.near || camera.far !== cam.far) { camera.fov = cam.fov; camera.near = cam.near; camera.far = cam.far; camera.updateProjectionMatrix(); }
+        camera.updateMatrixWorld(true);
+        const L = cam.look || {};
+        applyLook(L, cam.target, camera.position);
+        dome.rotation.y = t * 0.035;
+
+        // 1. scene (HDR, MSAA)
+        renderer.setRenderTarget(rtScene); renderer.render(scene, camera);
+        // 2. depth (only when DOF is on; FX on layer 2 are skipped)
+        const U = compMat.uniforms;
+        if ((L.dof ?? DEF.dof) > 0.001) {
+          const bg = scene.background, fogS = scene.fog; scene.background = null; scene.fog = null;
+          scene.overrideMaterial = depthMat; camera.layers.disable(2);
+          renderer.setRenderTarget(rtDepth); renderer.setClearColor(0xffffff, 1); renderer.clear(); renderer.render(scene, camera);
+          scene.overrideMaterial = null; camera.layers.enable(2); scene.background = bg; scene.fog = fogS; renderer.setClearColor(0x000000, 1);
+          U.uFocus.value = L.focus ?? (cam.pos ? tg.distanceTo(camera.position) : cam.dist); U.uNear.value = camera.near; U.uFar.value = camera.far;
+        }
+        // 3. bloom
+        brightMat.uniforms.tSrc.value = rtScene.texture; brightMat.uniforms.uTexel.value.set(0.5 / W, 0.5 / H); pass(brightMat, mips[0]);
+        for (let i = 0; i < LV; i++) {
+          if (i > 0) { downMat.uniforms.tSrc.value = mips[i - 1].texture; downMat.uniforms.uTexel.value.set(0.5 / mips[i - 1].width, 0.5 / mips[i - 1].height); pass(downMat, mips[i]); }
+          blurMat.uniforms.tSrc.value = mips[i].texture; blurMat.uniforms.uDir.value.set(1 / mips[i].width, 0); pass(blurMat, tmps[i]);
+          blurMat.uniforms.tSrc.value = tmps[i].texture; blurMat.uniforms.uDir.value.set(0, 1 / mips[i].height); pass(blurMat, mips[i]);
+        }
+        // 4. composite to the canvas
+        pass(compMat, null);
+        drawTags(); drawCallouts(t);
+      }
+
+      // ---------- clock ----------
+      window.addEventListener("hf-seek", (e) => render(e.detail.time));
+      const tl = gsap.timeline({ paused: true });
+      const st = { p: 0 };
+      tl.to(st, { p: 1, duration: F.total, ease: "none", onUpdate: () => render(tl.time()) }, 0);
+      window.__hf = window.__hf || {};
+      window.__hf.buildReady = window.__hf.buildReady || {};
+      window.__hf.buildReady.stage = Promise.all(ctx.waitFor || []).then(() => {
+        renderer.setRenderTarget(rtScene); renderer.compile(scene, camera); renderer.setRenderTarget(null);
+        render(0);
+        const px = new Uint8Array(4); const gl = renderer.getContext(); gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
+      });
+      window.__timelines["stage"] = tl;
+    })();
+  </script>
+</template>
