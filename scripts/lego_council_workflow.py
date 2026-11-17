@@ -360,13 +360,14 @@ async def make_builder(slug):
 
 
 PRIORITY = A.get("priority_note", "")
+BUILDER_TIMEOUT = float(A.get("builder_timeout_s", 7200))
 
 
 async def builder_turn(state, slug, prompt):
     if PRIORITY:
         prompt = prompt + "\n\nPRIORITY FROM THE PERSON: " + PRIORITY
-    try:
-        return await state["b"](prompt, BSCHEMA)
+    try:   # watchdog: a builder turn that never returns (seen once) is replaced by a fresh builder after BUILDER_TIMEOUT
+        return await asyncio.wait_for(state["b"](prompt, BSCHEMA), timeout=BUILDER_TIMEOUT)
     except Exception as e:
         log(f"[{slug}] builder turn failed ({e}); starting a fresh builder that reads REVAMP_NOTES.md")
         state["b"] = await make_builder(slug)
