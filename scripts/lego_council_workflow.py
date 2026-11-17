@@ -422,6 +422,8 @@ cite the research or present a dramatized "Imagine..." example; never invent sta
 
 async def scaffold(slug):
     if os.path.isdir(os.path.join(WS, slug)):
+        if slug in TOFU and "series-badge" not in open(os.path.join(WS, slug, "index.html"), encoding="utf-8").read():
+            await sh([VPY, "scripts/series_badge.py", slug], timeout=60)
         return
     code, txt = await sh([VPY, "scripts/new_video.py", slug, "--template", "brick-cinematic"], timeout=300)
     if code != 0:
@@ -472,7 +474,8 @@ async def run_video(slug):
     if rs.get("note"):
         prompt += "\n\n" + rs["note"]
     final = {"slug": slug, "rounds": 0, "passed": False, "mp4": None}
-    for n in range(start, MAX_ROUNDS + 1):
+    last = min(MAX_ROUNDS, int(rs.get("max_round", MAX_ROUNDS)))   # per-video cap (e.g. 3 NEW rounds on top of old ones)
+    for n in range(start, last + 1):
         phase(f"{slug} · round {n}")
         if n == start and rs.get("render_first"):
             b = {"ready": True, "cta_line": rs.get("cta", "(from the previous run)"), "unsure_facts": [], "problems": []}
@@ -512,9 +515,9 @@ async def run_video(slug):
         final.update(rounds=n, passed=ok, mp4=mp4, dur=dur, loud=loud, cta=b.get("cta_line"), overall=overall,
                      unsure=b.get("unsure_facts", []), problems=b.get("problems", []))
         report(f"### {slug}: round {n}\n\n`{mp4}` · {dur:.1f} s · {loud}\n\nCTA: “{b.get('cta_line')}”\n\n{tbl}\n\n"
-               f"Overall {overall:.2f} · {'**PASSED** the private gate' if ok else 'below gate' if n < MAX_ROUNDS else 'round cap reached'}")
+               f"Overall {overall:.2f} · {'**PASSED** the private gate' if ok else 'below gate' if n < last else 'round cap reached'}")
         log(f"[{slug} r{n}] overall {overall:.2f} passed={ok}")
-        if ok or n == MAX_ROUNDS:
+        if ok or n == last:
             break
         prompt = feedback_prompt(n, res, dur, loud)
     if final.get("mp4") and not final.get("error"):   # council rounds are 10 fps drafts: make the 30 fps full-quality deliverable
