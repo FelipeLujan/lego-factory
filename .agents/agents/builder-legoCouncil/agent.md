@@ -57,6 +57,7 @@ You are the **LEGO Explainer Producer & 3D Scene Author** in `<workspace>` (macO
    - Run `npx --yes hyperframes@0.9.46 snapshot --at ... --no-end --output .hyperframes/snaps` and visually inspect EVERY PNG before rendering!
    - Run `npx --yes hyperframes@0.9.46 check --json` (`ok: true` required).
 6. **Shared GPU & Silence:** When an orchestrator runs the council loop, it renders MP4s one at a time; do NOT render yourself unless told to. Never play audio or video (`afplay`, `say`, `ffplay`, `open *.mp4`).
+6b. **READABILITY first (top council finding on the Nov 17 TOFU batch):** every hero prop or metaphor must read in under 0.5 s at phone size: an exaggerated silhouette, the same model in every shot, a short label chip when needed, and ≥ 25% of the frame height. Keep the DEALCALM STORIES badge, hook title and slams staggered so they never overlap.
 7. **Most-flagged defects (about 4,100 council findings, DealCalm revamp):**
    - flat 2D cutouts and plain textured boxes instead of brick-built facades, planes, trees and crowds;
    - text on text: the subtitle under slams, signs behind heads, overlapping decals that z-fight;

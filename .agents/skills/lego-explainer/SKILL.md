@@ -107,6 +107,13 @@ Ranked by how often seats flagged them:
 - Use `npx --yes hyperframes@0.9.46 …` (never interactive). Snapshot: `--at 1.2,5,9 --no-end --output <dir>` (plain seconds, no "s").
 - Never play audio/video out loud (no afplay, say, ffplay, open).
 
+## 9. Overnight TOFU production lessons (Nov 17, 2026: 33 videos, about 7,500 council findings)
+- **Scores to expect at 3 rounds:** round 1 lands about 6.2–6.7, round 3 about 6.9–7.2. The mean over 33 finished videos was **7.07** (range 6.81–7.46). Extra rounds keep paying a little: silna-nba-deal reached **7.46** after 5 rounds (+0.4 over its round 3). Nobody reached the private 8.0 gate.
+- **#1 finding now is READABILITY of the brick metaphor** (about 2,300 mentions: the viewer can't tell at phone size what an object is or what it means). Make every hero prop readable in under 0.5 s: an exaggerated silhouette, one consistent model reused in every shot (the dot-com sock puppet looked like a pipe in one shot and a dog in another), a short label chip when needed, and framing at ≥ 25% of the frame height.
+- Then, in order: not brick-built (flat or primitive shapes, sprite FX) · an empty floor in the bottom 40% · caption/HUD/badge collisions (the new DEALCALM STORIES badge plus the hook title plus slams: keep them staggered) · faces cut or hidden · hook/title (the triple hook) · clipping/scale · bloom blowouts · static holds · CTA/end-card layout · dead air.
+- **Re-cutting an old ~110 s video to 60–75 s beats starting fresh:** the 4 re-cuts landed at 7.06–7.19 on their first new rounds (their old ~110 s cuts were 6.46–6.86).
+- **Daemon infra that worked:** queue.json with per-item `max_round`, a 2 h builder watchdog, the topic scout refill (its stories were the strongest), 10 fps drafts (35–70 s), automatic `output/` sync, and the disk-pause at 5 GB. Bugs found and fixed: hung builder turns, a variable-name collision, and scout items inheriting `max_rounds` 10.
+
 ## Render speed (benchmark 2026-11-16, Mac M1 16 GB, ai-boom full 110 s)
 > On any other machine (e.g. the Windows PC with an AMD GPU) run `scripts/render_benchmark.py <finished-project>` once and pass its recommended `workers` / `gpu_encode` to the workflow. On Windows `gpu_encode` defaults to off until benchmarked.
 | Setting | Render time |

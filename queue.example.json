@@ -1,0 +1,32 @@
+{
+ "_readme": "Copy to queue.json (git-ignored) and run scripts/lego_council_workflow.py with Args {\"queue_file\": \"<workspace>/queue.json\", \"concurrency\": 3, \"max_rounds\": 10, \"item_rounds\": 3, \"priority_note\": \"...\"}. Items run top to bottom; edit the file any time. Use 'brief_file' for an existing fact sheet (docs/facts/<slug>.md) or 'topic' to have the researcher write one. When nothing is pending, a topic scout adds 6 new researched topics.",
+ "items": [
+  {
+   "slug": "getty-ransom",
+   "status": "pending",
+   "brief_file": "<workspace>/docs/facts/getty-ransom.md",
+   "resume": {
+    "round": 1,
+    "max_round": 3
+   }
+  },
+  {
+   "slug": "voss-mirroring",
+   "status": "pending",
+   "topic": "Mirroring (tactic explainer, Never Split the Difference): repeat the last 1-3 words as a question. Source: Chris Voss & Tahl Raz (2016); documented case or a clearly dramatized example.",
+   "resume": {
+    "round": 1,
+    "max_round": 3
+   }
+  },
+  {
+   "slug": "silna-nba-deal",
+   "status": "pending",
+   "topic": "Story, sports contract (1976): the Spirits of St. Louis owners' 'forever' share of NBA TV money.",
+   "resume": {
+    "round": 1,
+    "max_round": 3
+   }
+  }
+ ]
+}

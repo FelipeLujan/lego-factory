@@ -27,3 +27,10 @@ Entertain and teach first; the brand is remembered, not sold. (Decided with the 
 > "Make 3 DealCalm TOFU videos: (1) the Getty ransom haggle, (2) anchoring explained, (3) negotiating a raise."
 
 The agent then runs `scripts/lego_council_workflow.py` with `topics` (research → fact sheet → scaffold → builder → 3 council rounds → final render → POST.md). See `docs/COUNCIL.md`.
+
+## Non-stop production (daemon) and output
+- Copy `queue.example.json` to `queue.json` (git-ignored), list the videos, then run `scripts/lego_council_workflow.py` via `run_workflow` with `{"queue_file": "<workspace>/queue.json", "concurrency": 3, "max_rounds": 10, "item_rounds": 3, "priority_note": "<engagement-first note + NO Vertex AI rule>"}`.
+  It works the queue top to bottom, refills it with researched topics when empty, and runs until stopped. Edit `queue.json` any time.
+- Finished videos are copied to `output/dealcalm-stories/<slug>.mp4` + `<slug>.POST.md` (and `output/dealcalm-long/`, `output/other/`) by `scripts/sync_output.py`. `output/` is local, not in git.
+- **Never use Vertex AI** or any Gemini/LLM API on the person's GCP project. Cloud Text-to-Speech is the only Google API.
+- First overnight run (Nov 17): 33 videos, mean council score 7.07, best silna-nba-deal 7.46. Lessons: `.agents/skills/lego-explainer/SKILL.md` §9.
