@@ -298,7 +298,12 @@ def passed(res):
         return False
     allv = [r["scores"][t] for r in res for t in TOPICS]
     seat_avgs = [sum(r["scores"][t] for t in TOPICS) / len(TOPICS) for r in res]
-    return min(seat_avgs) >= 8.0 and min(allv) >= 7.5
+    return min(seat_avgs) >= GATE_AVG and min(allv) >= GATE_MIN
+
+
+GATE_AVG = float(A.get("gate_avg", 8.0))                  # private pass mark: every seat's average >= this (never told to seats/builders)
+GATE_MIN = float(A.get("gate_min", GATE_AVG - 0.5))       # ... and no single topic score below this
+TARGET_S = A.get("target_seconds") or [100, 118]          # render length window used in the builder feedback
 
 
 async def run_seat(slug, n, seat):
@@ -394,7 +399,8 @@ def feedback_prompt(n, res, dur, loud):
         fb.append(f"## {s_} (avg {sum(r['scores'][t] for t in TOPICS) / len(TOPICS):.2f})\nSummary: {r['summary']}\n" +
                   "\n".join(f"- [{f['severity']}] t={f['time_s']}s: {f['issue']} -> FIX: {f['fix']}" for f in r["findings"]) +
                   (f"\nCopy rewrites: {r['copy_rewrites']}" if r.get("copy_rewrites") and r["copy_rewrites"].strip().lower() != "none" else ""))
-    dnote = "" if 100 <= dur <= 118 else f"\nNOTE: the render is {dur:.1f} s; bring it back to ~110 s (100-118 s)."
+    lo, hi = float(TARGET_S[0]), float(TARGET_S[1])
+    dnote = "" if lo <= dur <= hi else f"\nNOTE: the render is {dur:.1f} s; bring it back into the brief's window ({lo:.0f}-{hi:.0f} s)."
     return (f"ROUND {n + 1}. The blind council reviewed your round {n} render ({dur:.1f} s, {loud}). Their findings:\n\n" +
             "\n\n".join(fb) + dnote +
             "\n\nAddress every high and medium finding and as many low ones as you can. Apply copy rewrites only when every fact "
